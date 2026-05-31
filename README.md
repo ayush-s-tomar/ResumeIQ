@@ -1,10 +1,19 @@
 # ResumeAI — AI-Powered Resume Screener
 
-An intelligent resume screening tool that compares your resume against a job description using the Claude AI API. Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
+## 🌐 Live Demo
+👉 https://resumeiq-55h8.onrender.com
+
+## 📸 What it does
+- Upload resume PDF or paste text
+- Paste any job description
+- Get instant AI match score
+- See missing keywords and improvements
+
+An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green)
-![Claude API](https://img.shields.io/badge/Claude-API-orange)
+![Groq](https://img.shields.io/badge/Groq-LLaMA3.3-orange)
 
 ---
 
