@@ -145,6 +145,9 @@
       <span class="btn-text">✦ &nbsp;Analyze Match</span>
       <div class="spinner"></div>
     </button>
+    <p id="loadingMsg" style="display:none; text-align:center; color:#2D6A4F; margin-top:12px; font-weight:500;">
+  🔍 Analyzing your resume, please wait...
+</p>
   </div>
   <div id="results">
     <div class="score-card">
@@ -218,6 +221,7 @@
     if (currentTab==='paste'&&!resumeText) return showError('Please paste your resume text.');
     const btn = document.getElementById('analyzeBtn');
     btn.classList.add('loading');
+    document.getElementById('loadingMsg').style.display = 'block';
     document.getElementById('results').style.display='none';
     const formData = new FormData();
     formData.append('job_description', jobDesc);
@@ -242,6 +246,7 @@
       document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
     } catch(e) { showError('Something went wrong. Please try again.'); }
     finally { btn.classList.remove('loading'); }
+    document.getElementById('loadingMsg').style.display = 'none';
   }
 </script>
 </body>
