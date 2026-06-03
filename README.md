@@ -1,19 +1,18 @@
 # ResumeAI — AI-Powered Resume Screener
 
+> An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
+
 ## 🌐 Live Demo
 👉 https://resumeiq-55h8.onrender.com
 
+---
+
 ## 📸 What it does
+
 - Upload resume PDF or paste text
 - Paste any job description
 - Get instant AI match score
 - See missing keywords and improvements
-
-An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue)
-![Flask](https://img.shields.io/badge/Flask-3.0-green)
-![Groq](https://img.shields.io/badge/Groq-LLaMA3.3-orange)
 
 ---
 
@@ -41,7 +40,6 @@ An intelligent resume screening tool that compares your resume against a job des
 
 ## Project Structure
 
-```
 resume-screener/
 ├── app.py                  # Flask backend & API logic
 ├── requirements.txt        # Python dependencies
@@ -50,11 +48,10 @@ resume-screener/
 ├── templates/
 │   └── index.html          # Main UI
 └── static/
-    ├── css/
-    │   └── style.css       # Styles
-    └── js/
-        └── main.js         # Frontend logic
-```
+├── css/
+│   └── style.css       # Styles
+└── js/
+└── main.js         # Frontend logic
 
 ---
 
@@ -62,17 +59,15 @@ resume-screener/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/resume-screener.git
-cd resume-screener
+git clone https://github.com/ayush-s-tomar/ResumeIQ.git
+cd ResumeIQ
 ```
 
 ### 2. Create a virtual environment
 ```bash
 python -m venv venv
-
 # On Windows:
 venv\Scripts\activate
-
 # On Mac/Linux:
 source venv/bin/activate
 ```
@@ -84,7 +79,7 @@ pip install -r requirements.txt
 
 ### 4. Set up your API key
 
-Get your free API key from [console.Groq.com](https://console.Groq.com)
+Get your free API key from [console.groq.com](https://console.groq.com)
 
 Create a `.env` file in the root directory:
 ```bash
@@ -92,9 +87,8 @@ cp .env.example .env
 ```
 
 Edit `.env` and add your key:
-```
-Groq_API_KEY=sk-ant-your-key-here
-```
+
+GROQ_API_KEY=your_groq_key_here
 
 ### 5. Run the app
 ```bash
@@ -107,7 +101,7 @@ Open your browser and go to: **http://localhost:5000**
 
 ## How to Use
 
-1. Upload your resume as a PDF **or** paste the text
+1. Upload your resume as a PDF or paste the text
 2. Paste the job description in the right panel
 3. Click **Analyze Match**
 4. Review your score, matched/missing keywords, and suggestions
@@ -121,29 +115,27 @@ Open your browser and go to: **http://localhost:5000**
 3. Connect your GitHub repo
 4. Set **Build Command**: `pip install -r requirements.txt`
 5. Set **Start Command**: `gunicorn app:app`
-6. Add environment variable: `Groq_API_KEY` = your key
+6. Add environment variable: `GROQ_API_KEY` = your key
 7. Deploy!
 
 > Add `gunicorn` to `requirements.txt` before deploying: `gunicorn==22.0.0`
 
 ---
 
-## Screenshots
-
-> *(Add screenshots of your app here after running it)*
-
----
-
 ## What I Learned
 
 - Building REST APIs with Flask
-- Integrating LLM APIs (Groq Claude)
+- Integrating LLM APIs (Groq — LLaMA 3.3)
 - PDF text extraction with pdfplumber
 - Frontend form handling and async fetch
-- Deploying Python web apps
+- Deploying Python web apps on Render
 
 ---
 
 ## License
 
 MIT License — feel free to use and modify.
+
+---
+
+Built by [Ayush Singh Tomar](https://github.com/ayush-s-tomar)
