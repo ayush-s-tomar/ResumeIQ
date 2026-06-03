@@ -33,7 +33,7 @@ An intelligent resume screening tool that compares your resume against a job des
 | Layer | Tech |
 |-------|------|
 | Backend | Python, Flask |
-| AI | Groq Claude API |
+| AI | Groq API (LLaMA 3.3) |
 | PDF Parsing | pdfplumber |
 | Frontend | HTML, CSS, Vanilla JS |
 
