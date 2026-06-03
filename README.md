@@ -33,7 +33,7 @@ An intelligent resume screening tool that compares your resume against a job des
 | Layer | Tech |
 |-------|------|
 | Backend | Python, Flask |
-| AI | Anthropic Claude API |
+| AI | Groq Claude API |
 | PDF Parsing | pdfplumber |
 | Frontend | HTML, CSS, Vanilla JS |
 
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 
 ### 4. Set up your API key
 
-Get your free API key from [console.anthropic.com](https://console.anthropic.com)
+Get your free API key from [console.Groq.com](https://console.Groq.com)
 
 Create a `.env` file in the root directory:
 ```bash
@@ -93,7 +93,7 @@ cp .env.example .env
 
 Edit `.env` and add your key:
 ```
-ANTHROPIC_API_KEY=sk-ant-your-key-here
+Groq_API_KEY=sk-ant-your-key-here
 ```
 
 ### 5. Run the app
@@ -121,7 +121,7 @@ Open your browser and go to: **http://localhost:5000**
 3. Connect your GitHub repo
 4. Set **Build Command**: `pip install -r requirements.txt`
 5. Set **Start Command**: `gunicorn app:app`
-6. Add environment variable: `ANTHROPIC_API_KEY` = your key
+6. Add environment variable: `Groq_API_KEY` = your key
 7. Deploy!
 
 > Add `gunicorn` to `requirements.txt` before deploying: `gunicorn==22.0.0`
@@ -137,7 +137,7 @@ Open your browser and go to: **http://localhost:5000**
 ## What I Learned
 
 - Building REST APIs with Flask
-- Integrating LLM APIs (Anthropic Claude)
+- Integrating LLM APIs (Groq Claude)
 - PDF text extraction with pdfplumber
 - Frontend form handling and async fetch
 - Deploying Python web apps
