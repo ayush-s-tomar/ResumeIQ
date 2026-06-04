@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+
+os.makedirs('/tmp/uploads', exist_ok=True)
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -28,6 +30,7 @@ def extract_text_from_pdf(filepath):
 
 def analyze_resume(resume_text, job_description):
     client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
     prompt = f"""You are an expert ATS and career coach. Analyze the resume against the job description.
 
 RESUME:
@@ -46,10 +49,12 @@ Return ONLY a valid JSON object with this exact structure:
   "improvements": ["improvement1", "improvement2", "improvement3"],
   "verdict": "<one of: Strong Match | Good Match | Partial Match | Weak Match>"
 }}"""
+
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}]
     )
+
     raw = response.choices[0].message.content.strip()
     if raw.startswith("```"):
         raw = raw.split("```")[1]
@@ -98,5 +103,4 @@ def analyze():
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    os.makedirs('uploads', exist_ok=True)
     app.run(debug=True)
