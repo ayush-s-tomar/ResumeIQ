@@ -87,15 +87,48 @@
     .strengths li::before { background: var(--accent); }
     .improvements li::before { background: var(--warn); }
     .error-box { background: var(--accent2-light); border: 1px solid #f0b9a3; border-radius: 12px; padding: 14px 18px; font-size: 14px; color: var(--accent2); margin-bottom: 20px; display: none; }
-    .copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); margin-bottom: 16px; float: right; font-family: 'DM Sans', sans-serif; }
+    .copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); margin-bottom: 16px; float: right; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
     .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ── Score History ── */
+    .history-section { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .history-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+    .history-clear-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .history-clear-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+    .history-list { display: flex; flex-direction: column; gap: 10px; }
+    .history-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      animation: fadeUp 0.3s ease;
+    }
+    .history-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .history-score { font-family: 'DM Serif Display', serif; font-size: 36px; min-width: 60px; text-align: center; line-height: 1; }
+    .history-meta { flex: 1; min-width: 0; }
+    .history-jd { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+    .history-time { font-size: 12px; color: var(--text-muted); }
+    .history-verdict { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+    .history-hint { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align: center; }
+
     footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--accent); text-decoration: none; }
+
     @media (max-width: 768px) {
       .grid, .results-grid { grid-template-columns: 1fr; }
       .score-card { flex-direction: column; text-align: center; gap: 20px; }
-      header, .container { padding-left: 20px; padding-right: 20px; }
+      header, .container, .history-section { padding-left: 20px; padding-right: 20px; }
       .hero { padding: 40px 20px 32px; }
+      .history-card { gap: 12px; }
+      .history-score { font-size: 28px; min-width: 48px; }
     }
   </style>
 </head>
@@ -108,6 +141,11 @@
   <div class="hero-tag">Smart Resume Analysis</div>
   <h1>Match your resume to<br/><em>any job description</em></h1>
   <p>Paste your resume and a job posting. Get an instant AI-powered match score with actionable feedback.</p>
+</div>
+<div style="text-align:center; margin-bottom:10px;">
+  <button onclick="fillSample()" style="background:none; border:1px solid #2D6A4F; color:#2D6A4F; border-radius:8px; padding:6px 14px; font-size:12px; cursor:pointer;">
+    + Use Sample Job Description
+  </button>
 </div>
 <div class="container">
   <div class="error-box" id="errorBox"></div>
@@ -155,7 +193,7 @@
     <p class="loading-msg" id="loadingMsg">🔍 Analyzing your resume, please wait...</p>
   </div>
   <div id="results">
-    <button class="copy-btn" onclick="copyResults()">📋 Copy Results</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyResults()">📋 Copy Results</button>
     <div style="clear:both;"></div>
     <div class="score-card">
       <div class="score-circle">
@@ -188,18 +226,109 @@
     </div>
   </div>
 </div>
+
+<!-- ── Score History Section ── -->
+<div class="history-section" id="historySection" style="display:none;">
+  <div class="history-header">
+    <h3 class="history-title">Recent Analyses</h3>
+    <button class="history-clear-btn" onclick="clearHistory()">🗑 Clear History</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <p class="history-hint">💡 Click any card to reload that result</p>
+</div>
+
 <footer>
   Built by Ayush Singh Tomar &nbsp;|&nbsp;
   <a href="https://github.com/ayush-s-tomar/ResumeIQ">GitHub</a>
 </footer>
+
 <script>
+  // ── Score History ──
+  const HISTORY_KEY = 'resumeiq_history';
+  const MAX_HISTORY = 5;
+
+  function saveToHistory(data, jobDesc) {
+    let history = getHistory();
+    const entry = {
+      score: data.match_score,
+      verdict: data.verdict,
+      summary: data.summary,
+      jobDesc: jobDesc.substring(0, 80),
+      matched: data.matched_keywords,
+      missing: data.missing_keywords,
+      strengths: data.strengths,
+      improvements: data.improvements,
+      time: new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
+    };
+    history.unshift(entry);
+    history = history.slice(0, MAX_HISTORY);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+  }
+
+  function getHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function clearHistory() {
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+  }
+
+  function getScoreColor(score) {
+    if (score >= 70) return '#2D6A4F';
+    if (score >= 45) return '#C77B2F';
+    return '#B7410E';
+  }
+
+  function renderHistory() {
+    const history = getHistory();
+    const section = document.getElementById('historySection');
+    const list = document.getElementById('historyList');
+    if (!history.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    list.innerHTML = history.map((entry, i) => {
+      const color = getScoreColor(entry.score);
+      return `
+        <div class="history-card" onclick="loadHistoryEntry(${i})">
+          <div class="history-score" style="color:${color}">${entry.score}</div>
+          <div class="history-meta">
+            <div class="history-jd">${entry.jobDesc}…</div>
+            <div class="history-time">🕐 ${entry.time}</div>
+          </div>
+          <div class="history-verdict" style="background:${color}22; color:${color}">${entry.verdict}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function loadHistoryEntry(i) {
+    const entry = getHistory()[i];
+    if (!entry) return;
+    document.getElementById('scoreNum').textContent = entry.score;
+    document.getElementById('summary').textContent = entry.summary;
+    const vClass = getVerdictClass(entry.verdict);
+    const pill = document.getElementById('verdictPill');
+    pill.className = 'verdict-pill ' + vClass;
+    pill.textContent = getVerdictEmoji(entry.verdict) + '  ' + entry.verdict;
+    document.getElementById('scoreBar').style.width = '0%';
+    setTimeout(() => document.getElementById('scoreBar').style.width = entry.score + '%', 100);
+    document.getElementById('matchedKeywords').innerHTML = entry.matched.map(k => '<span class="tag matched">' + k + '</span>').join('');
+    document.getElementById('missingKeywords').innerHTML = entry.missing.map(k => '<span class="tag missing">' + k + '</span>').join('');
+    document.getElementById('strengths').innerHTML = entry.strengths.map(s => '<li>' + s + '</li>').join('');
+    document.getElementById('improvements').innerHTML = entry.improvements.map(x => '<li>' + x + '</li>').join('');
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Main App ──
   let currentTab = 'upload', selectedFile = null;
 
   function switchTab(tab) {
     currentTab = tab;
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='upload')||(i===1&&tab==='paste')));
-    document.getElementById('uploadTab').style.display = tab==='upload'?'block':'none';
-    document.getElementById('pasteTab').style.display = tab==='paste'?'block':'none';
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i===0&&tab==='upload')||(i===1&&tab==='paste')));
+    document.getElementById('uploadTab').style.display = tab === 'upload' ? 'block' : 'none';
+    document.getElementById('pasteTab').style.display = tab === 'paste' ? 'block' : 'none';
   }
 
   function handleFile(input) {
@@ -223,81 +352,142 @@
   dropZone.addEventListener('drop', e => {
     e.preventDefault(); dropZone.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
-    if (file && file.type==='application/pdf') {
-      selectedFile=file;
-      document.getElementById('fileSelected').style.display='flex';
-      document.getElementById('fileName').textContent=file.name;
-      dropZone.style.display='none';
+    if (file && file.type === 'application/pdf') {
+      selectedFile = file;
+      document.getElementById('fileSelected').style.display = 'flex';
+      document.getElementById('fileName').textContent = file.name;
+      dropZone.style.display = 'none';
     }
   });
 
   function showError(msg) {
-    const b=document.getElementById('errorBox');
-    b.textContent=msg;
-    b.style.display='block';
-    setTimeout(()=>b.style.display='none',6000);
+    const b = document.getElementById('errorBox');
+    b.textContent = msg;
+    b.style.display = 'block';
+    setTimeout(() => b.style.display = 'none', 6000);
   }
 
   function getVerdictClass(v) {
-    if(v.includes('Strong'))return'strong';
-    if(v.includes('Good'))return'good';
-    if(v.includes('Partial'))return'partial';
-    return'weak';
+    if (v.includes('Strong')) return 'strong';
+    if (v.includes('Good')) return 'good';
+    if (v.includes('Partial')) return 'partial';
+    return 'weak';
   }
 
   function getVerdictEmoji(v) {
-    if(v.includes('Strong'))return'🟢';
-    if(v.includes('Good'))return'🔵';
-    if(v.includes('Partial'))return'🟡';
-    return'🔴';
+    if (v.includes('Strong')) return '🟢';
+    if (v.includes('Good')) return '🔵';
+    if (v.includes('Partial')) return '🟡';
+    return '🔴';
   }
 
   function copyResults() {
     const score = document.getElementById('scoreNum').textContent;
     const verdict = document.getElementById('verdictPill').textContent;
     const summary = document.getElementById('summary').textContent;
-    const text = "ResumeIQ Analysis\nScore: "+score+"/100\nVerdict: "+verdict+"\nSummary: "+summary;
-    navigator.clipboard.writeText(text);
-    alert('Results copied!');
+    const matched = [...document.getElementById('matchedKeywords').querySelectorAll('.tag')].map(t => t.textContent).join(', ');
+    const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent).join(', ');
+    const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
+    const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
+
+    const text = [
+      '📊 ResumeIQ Analysis Report',
+      '─────────────────────────',
+      `Score     : ${score}/100`,
+      `Verdict   : ${verdict.trim()}`,
+      `Summary   : ${summary}`,
+      '',
+      `✅ Matched Keywords: ${matched || 'None'}`,
+      `❌ Missing Keywords: ${missing || 'None'}`,
+      '',
+      '💪 Strengths:',
+      strengths,
+      '',
+      '📈 Areas to Improve:',
+      improvements,
+      '',
+      `Generated by ResumeIQ — ${new Date().toLocaleString()}`
+    ].join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy Results';
+        btn.classList.remove('copied');
+      }, 2500);
+    }).catch(() => alert('Could not copy. Please copy manually.'));
+  }
+
+  function fillSample() {
+    document.getElementById('jobDesc').value = `We are looking for a Python Developer with experience in building backend APIs and working with AI/ML tools.
+
+Requirements:
+- 2+ years of Python development experience
+- Experience with Flask or FastAPI
+- Familiarity with REST APIs and JSON
+- Basic knowledge of machine learning concepts
+- Experience with Git and version control
+- Strong problem-solving skills`;
+    document.getElementById('charCount').textContent = document.getElementById('jobDesc').value.length + ' characters';
   }
 
   async function analyze() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
     const resumeText = document.getElementById('resumeText').value.trim();
     if (!jobDesc) return showError('Please paste a job description.');
-    if (currentTab==='upload'&&!selectedFile) return showError('Please upload a PDF resume.');
-    if (currentTab==='paste'&&!resumeText) return showError('Please paste your resume text.');
+    if (currentTab === 'upload' && !selectedFile) return showError('Please upload a PDF resume.');
+    if (currentTab === 'paste' && !resumeText) return showError('Please paste your resume text.');
+
     const btn = document.getElementById('analyzeBtn');
     btn.classList.add('loading');
-    document.getElementById('loadingMsg').style.display='block';
-    document.getElementById('results').style.display='none';
+    document.getElementById('loadingMsg').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+
     const formData = new FormData();
     formData.append('job_description', jobDesc);
-    if (currentTab==='upload'&&selectedFile) formData.append('resume_pdf', selectedFile);
+    if (currentTab === 'upload' && selectedFile) formData.append('resume_pdf', selectedFile);
     else formData.append('resume_text', resumeText);
+
     try {
-      const res = await fetch('/analyze', {method:'POST', body:formData});
+      const res = await fetch('/analyze', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.error) return showError(data.error);
+
+      // Render score
       document.getElementById('scoreNum').textContent = data.match_score;
       document.getElementById('summary').textContent = data.summary;
+
       const vClass = getVerdictClass(data.verdict);
       const pill = document.getElementById('verdictPill');
       pill.className = 'verdict-pill ' + vClass;
       pill.textContent = getVerdictEmoji(data.verdict) + '  ' + data.verdict;
-      setTimeout(()=>document.getElementById('scoreBar').style.width=data.match_score+'%', 100);
-      document.getElementById('matchedKeywords').innerHTML = data.matched_keywords.map(k=>'<span class="tag matched">'+k+'</span>').join('');
-      document.getElementById('missingKeywords').innerHTML = data.missing_keywords.map(k=>'<span class="tag missing">'+k+'</span>').join('');
-      document.getElementById('strengths').innerHTML = data.strengths.map(s=>'<li>'+s+'</li>').join('');
-      document.getElementById('improvements').innerHTML = data.improvements.map(i=>'<li>'+i+'</li>').join('');
-      document.getElementById('results').style.display='block';
-      document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
-    } catch(e) { showError('Something went wrong. Please try again.'); }
-    finally {
+
+      document.getElementById('scoreBar').style.width = '0%';
+      setTimeout(() => document.getElementById('scoreBar').style.width = data.match_score + '%', 100);
+
+      document.getElementById('matchedKeywords').innerHTML = data.matched_keywords.map(k => '<span class="tag matched">' + k + '</span>').join('');
+      document.getElementById('missingKeywords').innerHTML = data.missing_keywords.map(k => '<span class="tag missing">' + k + '</span>').join('');
+      document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
+      document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
+
+      // ── Save to history ──
+      saveToHistory(data, jobDesc);
+
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch(e) {
+      showError('Something went wrong. Please try again.');
+    } finally {
       btn.classList.remove('loading');
-      document.getElementById('loadingMsg').style.display='none';
+      document.getElementById('loadingMsg').style.display = 'none';
     }
   }
+
+  // Load history on page start
+  window.addEventListener('DOMContentLoaded', renderHistory);
 </script>
 </body>
 </html>
