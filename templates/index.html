@@ -15,6 +15,32 @@
       --warn: #C77B2F; --warn-light: #FEF3E2;
       --radius: 16px; --shadow: 0 2px 20px rgba(26,23,20,0.07);
     }
+
+    /* ── Template Buttons ── */
+    .tpl-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .tpl-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .tpl-btn.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
     .logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 8px; }
@@ -98,19 +124,7 @@
     .history-clear-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
     .history-clear-btn:hover { border-color: var(--accent2); color: var(--accent2); }
     .history-list { display: flex; flex-direction: column; gap: 10px; }
-    .history-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.15s;
-      animation: fadeUp 0.3s ease;
-    }
+    .history-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow); cursor: pointer; transition: border-color 0.2s, transform 0.15s; animation: fadeUp 0.3s ease; }
     .history-card:hover { border-color: var(--accent); transform: translateY(-1px); }
     .history-score { font-family: 'DM Serif Display', serif; font-size: 36px; min-width: 60px; text-align: center; line-height: 1; }
     .history-meta { flex: 1; min-width: 0; }
@@ -129,6 +143,7 @@
       .hero { padding: 40px 20px 32px; }
       .history-card { gap: 12px; }
       .history-score { font-size: 28px; min-width: 48px; }
+      .tpl-btn { font-size: 12px; padding: 7px 14px; }
     }
   </style>
 </head>
@@ -137,16 +152,24 @@
   <div class="logo"><span class="logo-dot"></span>ResumeIQ</div>
   <span class="badge">AI Powered</span>
 </header>
+
 <div class="hero">
   <div class="hero-tag">Smart Resume Analysis</div>
   <h1>Match your resume to<br/><em>any job description</em></h1>
   <p>Paste your resume and a job posting. Get an instant AI-powered match score with actionable feedback.</p>
 </div>
-<div style="text-align:center; margin-bottom:10px;">
-  <button onclick="fillSample()" style="background:none; border:1px solid #2D6A4F; color:#2D6A4F; border-radius:8px; padding:6px 14px; font-size:12px; cursor:pointer;">
-    + Use Sample Job Description
-  </button>
+
+<!-- ── JD Templates ── -->
+<div style="text-align:center; margin-bottom:24px;">
+  <p style="font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Quick Templates</p>
+  <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
+    <button class="tpl-btn" onclick="fillTemplate('python', this)">🐍 Python Developer</button>
+    <button class="tpl-btn" onclick="fillTemplate('aiml', this)">🤖 AI / ML Engineer</button>
+    <button class="tpl-btn" onclick="fillTemplate('data', this)">📊 Data Analyst</button>
+    <button class="tpl-btn" onclick="fillTemplate('fullstack', this)">🌐 Full Stack Developer</button>
+  </div>
 </div>
+
 <div class="container">
   <div class="error-box" id="errorBox"></div>
   <div class="grid">
@@ -185,6 +208,7 @@
       <span class="char-count" id="charCount">0 characters</span>
     </div>
   </div>
+
   <div class="analyze-wrap">
     <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
       <span class="btn-text">✦ &nbsp;Analyze Match</span>
@@ -192,6 +216,7 @@
     </button>
     <p class="loading-msg" id="loadingMsg">🔍 Analyzing your resume, please wait...</p>
   </div>
+
   <div id="results">
     <button class="copy-btn" id="copyBtn" onclick="copyResults()">📋 Copy Results</button>
     <div style="clear:both;"></div>
@@ -243,6 +268,113 @@
 </footer>
 
 <script>
+  // ── JD Templates ──
+  const JD_TEMPLATES = {
+    python: {
+      text: `We are looking for a skilled Python Developer to join our backend engineering team.
+
+Key Responsibilities:
+- Design and develop scalable REST APIs using Flask or FastAPI
+- Write clean, maintainable Python code following best practices
+- Work with databases (PostgreSQL, MongoDB) and ORM frameworks
+- Integrate third-party APIs and services
+- Participate in code reviews and agile ceremonies
+
+Requirements:
+- 2+ years of Python development experience
+- Strong knowledge of Flask or FastAPI
+- Experience with REST API design and JSON
+- Familiarity with Git, Docker, and CI/CD pipelines
+- Knowledge of SQL and NoSQL databases
+- Problem-solving skills and attention to detail
+
+Nice to have:
+- Experience with cloud platforms (AWS, GCP, Azure)
+- Knowledge of message queues (Celery, RabbitMQ)
+- Contributions to open-source projects`
+    },
+    aiml: {
+      text: `We are hiring an AI/ML Engineer to build and deploy intelligent systems at scale.
+
+Key Responsibilities:
+- Design, train, and evaluate machine learning models
+- Build NLP pipelines and LLM-powered applications
+- Deploy models to production using MLflow, FastAPI, or similar tools
+- Work with large datasets and perform feature engineering
+- Collaborate with product teams to integrate AI into applications
+
+Requirements:
+- Strong Python skills with experience in ML frameworks (PyTorch, TensorFlow, scikit-learn)
+- Hands-on experience with NLP, LLMs, or computer vision
+- Familiarity with Hugging Face, LangChain, or OpenAI APIs
+- Understanding of model evaluation, fine-tuning, and prompt engineering
+- Experience with data preprocessing and EDA
+- Knowledge of Git and experiment tracking tools
+
+Nice to have:
+- Experience with vector databases (Pinecone, Weaviate)
+- Knowledge of MLOps and model deployment pipelines
+- Published research or Kaggle competition experience`
+    },
+    data: {
+      text: `We are looking for a Data Analyst to turn raw data into actionable business insights.
+
+Key Responsibilities:
+- Analyze large datasets to identify trends, patterns, and anomalies
+- Build dashboards and reports using Power BI or Tableau
+- Write complex SQL queries for data extraction and transformation
+- Work with stakeholders to define KPIs and metrics
+- Present findings clearly to non-technical audiences
+
+Requirements:
+- Proficiency in SQL (joins, window functions, CTEs)
+- Experience with Python or R for data analysis (pandas, NumPy, matplotlib)
+- Hands-on experience with BI tools (Power BI, Tableau, or Looker)
+- Strong understanding of statistics and data visualization
+- Excellent communication and storytelling skills
+
+Nice to have:
+- Experience with Google Analytics or similar tools
+- Knowledge of data warehouses (BigQuery, Snowflake, Redshift)
+- Familiarity with Excel advanced features and pivot tables`
+    },
+    fullstack: {
+      text: `We are seeking a Full Stack Developer to build end-to-end web applications.
+
+Key Responsibilities:
+- Develop responsive frontend interfaces using React or Vue.js
+- Build robust backend APIs using Node.js or Python (Django/Flask)
+- Design and manage relational and non-relational databases
+- Ensure application performance, security, and scalability
+- Collaborate with UI/UX designers and product managers
+
+Requirements:
+- 2+ years of full stack development experience
+- Strong proficiency in JavaScript/TypeScript and React or Vue.js
+- Backend experience with Node.js, Python, or similar
+- Knowledge of HTML5, CSS3, and responsive design
+- Experience with REST APIs and GraphQL
+- Familiarity with Git, Docker, and deployment platforms (Vercel, Render, AWS)
+
+Nice to have:
+- Experience with Next.js or Nuxt.js
+- Knowledge of WebSockets and real-time applications
+- Understanding of CI/CD pipelines and DevOps basics`
+    }
+  };
+
+  function fillTemplate(key, btn) {
+    const tpl = JD_TEMPLATES[key];
+    if (!tpl) return;
+    document.getElementById('jobDesc').value = tpl.text;
+    document.getElementById('charCount').textContent = tpl.text.length + ' characters';
+    // highlight active button
+    document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // scroll to textarea
+    document.getElementById('jobDesc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   // ── Score History ──
   const HISTORY_KEY = 'resumeiq_history';
   const MAX_HISTORY = 5;
@@ -389,7 +521,6 @@
     const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent).join(', ');
     const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
     const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
-
     const text = [
       '📊 ResumeIQ Analysis Report',
       '─────────────────────────',
@@ -408,29 +539,12 @@
       '',
       `Generated by ResumeIQ — ${new Date().toLocaleString()}`
     ].join('\n');
-
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = '✅ Copied!';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '📋 Copy Results';
-        btn.classList.remove('copied');
-      }, 2500);
+      setTimeout(() => { btn.textContent = '📋 Copy Results'; btn.classList.remove('copied'); }, 2500);
     }).catch(() => alert('Could not copy. Please copy manually.'));
-  }
-
-  function fillSample() {
-    document.getElementById('jobDesc').value = `We are looking for a Python Developer with experience in building backend APIs and working with AI/ML tools.
-
-Requirements:
-- 2+ years of Python development experience
-- Experience with Flask or FastAPI
-- Familiarity with REST APIs and JSON
-- Basic knowledge of machine learning concepts
-- Experience with Git and version control
-- Strong problem-solving skills`;
-    document.getElementById('charCount').textContent = document.getElementById('jobDesc').value.length + ' characters';
   }
 
   async function analyze() {
@@ -455,7 +569,6 @@ Requirements:
       const data = await res.json();
       if (data.error) return showError(data.error);
 
-      // Render score
       document.getElementById('scoreNum').textContent = data.match_score;
       document.getElementById('summary').textContent = data.summary;
 
@@ -472,7 +585,9 @@ Requirements:
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
       document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
 
-      // ── Save to history ──
+      // reset template button highlights after analysis
+      document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+
       saveToHistory(data, jobDesc);
 
       document.getElementById('results').style.display = 'block';
@@ -486,7 +601,6 @@ Requirements:
     }
   }
 
-  // Load history on page start
   window.addEventListener('DOMContentLoaded', renderHistory);
 </script>
 </body>
