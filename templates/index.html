@@ -17,29 +17,18 @@
     }
 
     /* ── Template Buttons ── */
-    .tpl-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 8px 18px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: var(--shadow);
-    }
-    .tpl-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-1px);
-    }
-    .tpl-btn.active {
-      background: var(--accent-light);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .tpl-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow); }
+    .tpl-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+    .tpl-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+    /* ── Keyword Highlighting ── */
+    #highlightBox { border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface2); margin-top: 10px; max-height: 260px; overflow-y: auto; }
+    #highlightedText { font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+    .hl-matched { background: #D8F3DC; color: #1B4332; border-radius: 3px; padding: 1px 3px; font-weight: 600; }
+    .hl-missing { background: #FDE8DF; color: #7B2D0E; border-radius: 3px; padding: 1px 3px; font-weight: 600; }
+    .hl-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; }
+    .hl-legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+    .hl-dot { width: 10px; height: 10px; border-radius: 2px; }
 
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
@@ -116,8 +105,6 @@
     .copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); margin-bottom: 16px; float: right; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
     .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
     .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-    /* ── Score History ── */
     .history-section { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
     .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .history-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
@@ -132,10 +119,8 @@
     .history-time { font-size: 12px; color: var(--text-muted); }
     .history-verdict { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
     .history-hint { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align: center; }
-
     footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--accent); text-decoration: none; }
-
     @media (max-width: 768px) {
       .grid, .results-grid { grid-template-columns: 1fr; }
       .score-card { flex-direction: column; text-align: center; gap: 20px; }
@@ -148,6 +133,7 @@
   </style>
 </head>
 <body>
+
 <header>
   <div class="logo"><span class="logo-dot"></span>ResumeIQ</div>
   <span class="badge">AI Powered</span>
@@ -173,6 +159,8 @@
 <div class="container">
   <div class="error-box" id="errorBox"></div>
   <div class="grid">
+
+    <!-- Resume Card -->
     <div class="card">
       <div class="card-label">
         <div class="card-num">1</div>
@@ -182,6 +170,8 @@
         <button class="tab active" onclick="switchTab('upload')">Upload PDF</button>
         <button class="tab" onclick="switchTab('paste')">Paste Text</button>
       </div>
+
+      <!-- Upload Tab -->
       <div id="uploadTab">
         <div class="upload-zone" id="dropZone">
           <input type="file" id="pdfInput" accept=".pdf" onchange="handleFile(this)"/>
@@ -195,10 +185,27 @@
           <button class="file-remove" onclick="removeFile()">×</button>
         </div>
       </div>
+
+      <!-- Paste Tab -->
       <div id="pasteTab" style="display:none;">
-        <textarea id="resumeText" placeholder="Paste your resume text here..."></textarea>
+        <textarea id="resumeText" placeholder="Paste your resume text here..." oninput="clearHighlights()"></textarea>
+        <!-- Keyword Highlight Box -->
+        <div id="highlightBox" style="display:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Highlighted Resume</span>
+            <button onclick="clearHighlights()" style="background:none; border:none; font-size:12px; color:var(--text-muted); cursor:pointer;">✕ Clear</button>
+          </div>
+          <div id="highlightedText"></div>
+        </div>
+        <!-- Legend -->
+        <div class="hl-legend" id="hlLegend" style="display:none;">
+          <div class="hl-legend-item"><div class="hl-dot" style="background:#D8F3DC;"></div> Matched keyword</div>
+          <div class="hl-legend-item"><div class="hl-dot" style="background:#FDE8DF;"></div> Missing keyword</div>
+        </div>
       </div>
     </div>
+
+    <!-- JD Card -->
     <div class="card">
       <div class="card-label">
         <div class="card-num">2</div>
@@ -252,7 +259,7 @@
   </div>
 </div>
 
-<!-- ── Score History Section ── -->
+<!-- ── Score History ── -->
 <div class="history-section" id="historySection" style="display:none;">
   <div class="history-header">
     <h3 class="history-title">Recent Analyses</h3>
@@ -368,11 +375,47 @@ Nice to have:
     if (!tpl) return;
     document.getElementById('jobDesc').value = tpl.text;
     document.getElementById('charCount').textContent = tpl.text.length + ' characters';
-    // highlight active button
     document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // scroll to textarea
     document.getElementById('jobDesc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── Keyword Highlighting ──
+  function highlightKeywords(text, matched, missing) {
+    if (!text.trim()) return;
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Sort by length descending so longer phrases match first
+    const allKeywords = [
+      ...matched.map(k => ({ word: k, type: 'matched' })),
+      ...missing.map(k => ({ word: k, type: 'missing' }))
+    ].sort((a, b) => b.word.length - a.word.length);
+
+    const pattern = allKeywords.map(k => escapeRegex(k.word)).join('|');
+    if (!pattern) return;
+
+    const regex = new RegExp(`(${pattern})`, 'gi');
+
+    const highlighted = text.replace(regex, (match) => {
+      const lower = match.toLowerCase();
+      const isMatched = matched.some(k => k.toLowerCase() === lower);
+      const cls = isMatched ? 'hl-matched' : 'hl-missing';
+      return `<span class="${cls}">${match}</span>`;
+    });
+
+    document.getElementById('highlightedText').innerHTML = highlighted;
+    document.getElementById('resumeText').style.display = 'none';
+    document.getElementById('highlightBox').style.display = 'block';
+    document.getElementById('hlLegend').style.display = 'flex';
+  }
+
+  function clearHighlights() {
+    document.getElementById('highlightBox').style.display = 'none';
+    document.getElementById('hlLegend').style.display = 'none';
+    document.getElementById('resumeText').style.display = 'block';
   }
 
   // ── Score History ──
@@ -461,6 +504,7 @@ Nice to have:
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i===0&&tab==='upload')||(i===1&&tab==='paste')));
     document.getElementById('uploadTab').style.display = tab === 'upload' ? 'block' : 'none';
     document.getElementById('pasteTab').style.display = tab === 'paste' ? 'block' : 'none';
+    if (tab === 'upload') clearHighlights();
   }
 
   function handleFile(input) {
@@ -585,7 +629,12 @@ Nice to have:
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
       document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
 
-      // reset template button highlights after analysis
+      // ── Highlight keywords if paste tab is active ──
+      if (currentTab === 'paste') {
+        highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
+      }
+
+      // ── Reset template button highlights ──
       document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
 
       saveToHistory(data, jobDesc);
