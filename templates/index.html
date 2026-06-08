@@ -26,10 +26,11 @@
     #highlightedText { font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-word; }
     .hl-matched { background: #D8F3DC; color: #1B4332; border-radius: 3px; padding: 1px 3px; font-weight: 600; }
     .hl-missing { background: #FDE8DF; color: #7B2D0E; border-radius: 3px; padding: 1px 3px; font-weight: 600; }
-    .hl-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; }
+    .hl-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; flex-wrap: wrap; }
     .hl-legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
-    .hl-dot { width: 10px; height: 10px; border-radius: 2px; }
+    .hl-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 
+    /* ── Base Styles ── */
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
     .logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); display: flex; align-items: center; gap: 8px; }
@@ -38,9 +39,9 @@
     .hero { text-align: center; padding: 64px 40px 48px; }
     .hero-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
     .hero-tag::before, .hero-tag::after { content: ''; width: 24px; height: 1px; background: var(--border); }
-    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(36px, 5vw, 56px); line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 5vw, 56px); line-height: 1.15; margin-bottom: 16px; }
     .hero h1 em { font-style: italic; color: var(--accent); }
-    .hero p { font-size: 17px; color: var(--text-muted); max-width: 480px; margin: 0 auto; font-weight: 300; }
+    .hero p { font-size: 16px; color: var(--text-muted); max-width: 480px; margin: 0 auto; font-weight: 300; }
     .container { max-width: 1100px; margin: 0 auto; padding: 0 40px 80px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; align-items: start; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
@@ -57,8 +58,8 @@
     .upload-zone p { font-size: 14px; color: var(--text-muted); }
     .upload-zone strong { color: var(--accent); font-weight: 600; }
     .file-selected { display: flex; align-items: center; gap: 12px; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 16px; margin-top: 12px; }
-    .file-selected span { font-size: 14px; font-weight: 500; color: var(--accent); flex: 1; }
-    .file-remove { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 18px; line-height: 1; opacity: 0.6; transition: opacity 0.2s; }
+    .file-selected span { font-size: 14px; font-weight: 500; color: var(--accent); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-remove { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 18px; line-height: 1; opacity: 0.6; transition: opacity 0.2s; flex-shrink: 0; }
     .file-remove:hover { opacity: 1; }
     textarea { width: 100%; min-height: 180px; border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--surface2); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.6; display: block; }
     textarea:focus { border-color: var(--accent); }
@@ -79,7 +80,7 @@
     .score-circle { width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
     .score-num { font-family: 'DM Serif Display', serif; font-size: 42px; line-height: 1; }
     .score-label { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; }
-    .score-info { flex: 1; }
+    .score-info { flex: 1; min-width: 0; }
     .verdict-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
     .verdict-pill.strong { background: #D8F3DC; color: #2D6A4F; }
     .verdict-pill.good { background: #EAF4FB; color: #1B6CA8; }
@@ -91,7 +92,7 @@
     .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
     .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
     .result-card-title { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .result-card-title span { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+    .result-card-title span { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; }
     .tag.matched { background: var(--accent-light); color: var(--accent); }
@@ -108,7 +109,7 @@
     .history-section { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
     .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .history-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
-    .history-clear-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+    .history-clear-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .history-clear-btn:hover { border-color: var(--accent2); color: var(--accent2); }
     .history-list { display: flex; flex-direction: column; gap: 10px; }
     .history-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow); cursor: pointer; transition: border-color 0.2s, transform 0.15s; animation: fadeUp 0.3s ease; }
@@ -121,14 +122,88 @@
     .history-hint { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align: center; }
     footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--accent); text-decoration: none; }
+
+    /* ═══════════════════════════════════════
+       MOBILE RESPONSIVE — max-width: 768px
+    ═══════════════════════════════════════ */
     @media (max-width: 768px) {
-      .grid, .results-grid { grid-template-columns: 1fr; }
-      .score-card { flex-direction: column; text-align: center; gap: 20px; }
-      header, .container, .history-section { padding-left: 20px; padding-right: 20px; }
-      .hero { padding: 40px 20px 32px; }
-      .history-card { gap: 12px; }
+
+      /* Header */
+      header { padding: 0 16px; height: 56px; }
+      .logo { font-size: 18px; }
+      .badge { font-size: 10px; padding: 3px 8px; }
+
+      /* Hero */
+      .hero { padding: 36px 16px 28px; }
+      .hero h1 { font-size: 28px; line-height: 1.2; }
+      .hero p { font-size: 14px; }
+      .hero-tag { font-size: 10px; }
+
+      /* Template buttons */
+      .tpl-btn { font-size: 12px; padding: 7px 12px; }
+
+      /* Container & Grid */
+      .container { padding: 0 16px 60px; }
+      .grid { grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+      .card { padding: 20px 16px; }
+      .card-title { font-size: 18px; }
+
+      /* Tabs */
+      .tab { padding: 8px 12px; font-size: 12px; }
+
+      /* Upload zone */
+      .upload-zone { padding: 28px 16px; }
+
+      /* Textarea */
+      textarea { min-height: 140px; font-size: 13px; }
+
+      /* Analyze button — full width on mobile */
+      .analyze-wrap { margin-bottom: 28px; }
+      .btn-analyze { width: 100%; justify-content: center; padding: 16px 24px; font-size: 14px; border-radius: 14px; }
+
+      /* Score card — stack vertically */
+      .score-card { flex-direction: column; text-align: center; gap: 16px; padding: 24px 16px; }
+      .score-circle { width: 100px; height: 100px; }
+      .score-num { font-size: 36px; }
+      .score-summary { font-size: 14px; }
+      .verdict-pill { font-size: 12px; }
+
+      /* Results grid — single column */
+      .results-grid { grid-template-columns: 1fr; gap: 14px; }
+      .result-card { padding: 18px 14px; }
+      .result-card-title { font-size: 11px; }
+      .tag { font-size: 12px; padding: 4px 10px; }
+      .item-list li { font-size: 13px; }
+
+      /* Copy button */
+      .copy-btn { float: none; width: 100%; text-align: center; margin-bottom: 12px; padding: 10px; }
+
+      /* History section */
+      .history-section { padding: 0 16px 48px; }
+      .history-title { font-size: 18px; }
+      .history-card { gap: 12px; padding: 14px 12px; }
       .history-score { font-size: 28px; min-width: 48px; }
-      .tpl-btn { font-size: 12px; padding: 7px 14px; }
+      .history-jd { font-size: 12px; }
+      .history-verdict { font-size: 11px; padding: 3px 8px; display: none; }
+
+      /* Highlight box */
+      #highlightBox { max-height: 200px; }
+      #highlightedText { font-size: 12px; }
+
+      /* Footer */
+      footer { padding: 20px 16px; font-size: 12px; }
+    }
+
+    /* ═══════════════════════════════════════
+       EXTRA SMALL — max-width: 400px
+    ═══════════════════════════════════════ */
+    @media (max-width: 400px) {
+      .hero h1 { font-size: 24px; }
+      .tpl-btn { font-size: 11px; padding: 6px 10px; }
+      .score-circle { width: 88px; height: 88px; }
+      .score-num { font-size: 30px; }
+      .history-card { gap: 8px; }
+      .history-score { font-size: 24px; min-width: 40px; }
     }
   </style>
 </head>
@@ -146,7 +221,7 @@
 </div>
 
 <!-- ── JD Templates ── -->
-<div style="text-align:center; margin-bottom:24px;">
+<div style="text-align:center; margin-bottom:24px; padding: 0 16px;">
   <p style="font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Quick Templates</p>
   <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
     <button class="tpl-btn" onclick="fillTemplate('python', this)">🐍 Python Developer</button>
@@ -189,7 +264,6 @@
       <!-- Paste Tab -->
       <div id="pasteTab" style="display:none;">
         <textarea id="resumeText" placeholder="Paste your resume text here..." oninput="clearHighlights()"></textarea>
-        <!-- Keyword Highlight Box -->
         <div id="highlightBox" style="display:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
             <span style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Highlighted Resume</span>
@@ -197,7 +271,6 @@
           </div>
           <div id="highlightedText"></div>
         </div>
-        <!-- Legend -->
         <div class="hl-legend" id="hlLegend" style="display:none;">
           <div class="hl-legend-item"><div class="hl-dot" style="background:#D8F3DC;"></div> Matched keyword</div>
           <div class="hl-legend-item"><div class="hl-dot" style="background:#FDE8DF;"></div> Missing keyword</div>
@@ -383,29 +456,19 @@ Nice to have:
   // ── Keyword Highlighting ──
   function highlightKeywords(text, matched, missing) {
     if (!text.trim()) return;
-
-    function escapeRegex(str) {
-      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    // Sort by length descending so longer phrases match first
+    function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
     const allKeywords = [
       ...matched.map(k => ({ word: k, type: 'matched' })),
       ...missing.map(k => ({ word: k, type: 'missing' }))
     ].sort((a, b) => b.word.length - a.word.length);
-
     const pattern = allKeywords.map(k => escapeRegex(k.word)).join('|');
     if (!pattern) return;
-
     const regex = new RegExp(`(${pattern})`, 'gi');
-
     const highlighted = text.replace(regex, (match) => {
       const lower = match.toLowerCase();
       const isMatched = matched.some(k => k.toLowerCase() === lower);
-      const cls = isMatched ? 'hl-matched' : 'hl-missing';
-      return `<span class="${cls}">${match}</span>`;
+      return `<span class="${isMatched ? 'hl-matched' : 'hl-missing'}">${match}</span>`;
     });
-
     document.getElementById('highlightedText').innerHTML = highlighted;
     document.getElementById('resumeText').style.display = 'none';
     document.getElementById('highlightBox').style.display = 'block';
@@ -425,13 +488,9 @@ Nice to have:
   function saveToHistory(data, jobDesc) {
     let history = getHistory();
     const entry = {
-      score: data.match_score,
-      verdict: data.verdict,
-      summary: data.summary,
-      jobDesc: jobDesc.substring(0, 80),
-      matched: data.matched_keywords,
-      missing: data.missing_keywords,
-      strengths: data.strengths,
+      score: data.match_score, verdict: data.verdict, summary: data.summary,
+      jobDesc: jobDesc.substring(0, 80), matched: data.matched_keywords,
+      missing: data.missing_keywords, strengths: data.strengths,
       improvements: data.improvements,
       time: new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
     };
@@ -446,10 +505,7 @@ Nice to have:
     catch { return []; }
   }
 
-  function clearHistory() {
-    localStorage.removeItem(HISTORY_KEY);
-    renderHistory();
-  }
+  function clearHistory() { localStorage.removeItem(HISTORY_KEY); renderHistory(); }
 
   function getScoreColor(score) {
     if (score >= 70) return '#2D6A4F';
@@ -465,15 +521,14 @@ Nice to have:
     section.style.display = 'block';
     list.innerHTML = history.map((entry, i) => {
       const color = getScoreColor(entry.score);
-      return `
-        <div class="history-card" onclick="loadHistoryEntry(${i})">
-          <div class="history-score" style="color:${color}">${entry.score}</div>
-          <div class="history-meta">
-            <div class="history-jd">${entry.jobDesc}…</div>
-            <div class="history-time">🕐 ${entry.time}</div>
-          </div>
-          <div class="history-verdict" style="background:${color}22; color:${color}">${entry.verdict}</div>
-        </div>`;
+      return `<div class="history-card" onclick="loadHistoryEntry(${i})">
+        <div class="history-score" style="color:${color}">${entry.score}</div>
+        <div class="history-meta">
+          <div class="history-jd">${entry.jobDesc}…</div>
+          <div class="history-time">🕐 ${entry.time}</div>
+        </div>
+        <div class="history-verdict" style="background:${color}22; color:${color}">${entry.verdict}</div>
+      </div>`;
     }).join('');
   }
 
@@ -482,9 +537,8 @@ Nice to have:
     if (!entry) return;
     document.getElementById('scoreNum').textContent = entry.score;
     document.getElementById('summary').textContent = entry.summary;
-    const vClass = getVerdictClass(entry.verdict);
     const pill = document.getElementById('verdictPill');
-    pill.className = 'verdict-pill ' + vClass;
+    pill.className = 'verdict-pill ' + getVerdictClass(entry.verdict);
     pill.textContent = getVerdictEmoji(entry.verdict) + '  ' + entry.verdict;
     document.getElementById('scoreBar').style.width = '0%';
     setTimeout(() => document.getElementById('scoreBar').style.width = entry.score + '%', 100);
@@ -538,8 +592,7 @@ Nice to have:
 
   function showError(msg) {
     const b = document.getElementById('errorBox');
-    b.textContent = msg;
-    b.style.display = 'block';
+    b.textContent = msg; b.style.display = 'block';
     setTimeout(() => b.style.display = 'none', 6000);
   }
 
@@ -565,28 +618,14 @@ Nice to have:
     const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent).join(', ');
     const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
     const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
-    const text = [
-      '📊 ResumeIQ Analysis Report',
-      '─────────────────────────',
-      `Score     : ${score}/100`,
-      `Verdict   : ${verdict.trim()}`,
-      `Summary   : ${summary}`,
-      '',
-      `✅ Matched Keywords: ${matched || 'None'}`,
-      `❌ Missing Keywords: ${missing || 'None'}`,
-      '',
-      '💪 Strengths:',
-      strengths,
-      '',
-      '📈 Areas to Improve:',
-      improvements,
-      '',
-      `Generated by ResumeIQ — ${new Date().toLocaleString()}`
-    ].join('\n');
+    const text = ['📊 ResumeIQ Analysis Report','─────────────────────────',
+      `Score     : ${score}/100`, `Verdict   : ${verdict.trim()}`, `Summary   : ${summary}`, '',
+      `✅ Matched Keywords: ${matched || 'None'}`, `❌ Missing Keywords: ${missing || 'None'}`, '',
+      '💪 Strengths:', strengths, '', '📈 Areas to Improve:', improvements, '',
+      `Generated by ResumeIQ — ${new Date().toLocaleString()}`].join('\n');
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
-      btn.textContent = '✅ Copied!';
-      btn.classList.add('copied');
+      btn.textContent = '✅ Copied!'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = '📋 Copy Results'; btn.classList.remove('copied'); }, 2500);
     }).catch(() => alert('Could not copy. Please copy manually.'));
   }
@@ -616,9 +655,8 @@ Nice to have:
       document.getElementById('scoreNum').textContent = data.match_score;
       document.getElementById('summary').textContent = data.summary;
 
-      const vClass = getVerdictClass(data.verdict);
       const pill = document.getElementById('verdictPill');
-      pill.className = 'verdict-pill ' + vClass;
+      pill.className = 'verdict-pill ' + getVerdictClass(data.verdict);
       pill.textContent = getVerdictEmoji(data.verdict) + '  ' + data.verdict;
 
       document.getElementById('scoreBar').style.width = '0%';
@@ -629,14 +667,11 @@ Nice to have:
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
       document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
 
-      // ── Highlight keywords if paste tab is active ──
       if (currentTab === 'paste') {
         highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
       }
 
-      // ── Reset template button highlights ──
       document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
-
       saveToHistory(data, jobDesc);
 
       document.getElementById('results').style.display = 'block';
