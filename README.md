@@ -1,14 +1,13 @@
 # ResumeAI — AI-Powered Resume Screener
-
 > An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
 
 ## 🌐 Live Demo
 👉 https://resumeiq-55h8.onrender.com
+> ⚡ Hosted on Render free tier — may take 15-20 seconds to wake up on first visit.
 
 ---
 
 ## 📸 What it does
-
 - Upload resume PDF or paste text
 - Paste any job description
 - Get instant AI match score
@@ -17,7 +16,6 @@
 ---
 
 ## Features
-
 - **Match Score** — Get a 0–100 ATS compatibility score
 - **Keyword Analysis** — See which keywords match and which are missing
 - **Strengths** — Understand what makes your resume stand out
@@ -28,7 +26,6 @@
 ---
 
 ## Tech Stack
-
 | Layer | Tech |
 |-------|------|
 | Backend | Python, Flask |
@@ -39,7 +36,7 @@
 ---
 
 ## Project Structure
-
+```
 resume-screener/
 ├── app.py                  # Flask backend & API logic
 ├── requirements.txt        # Python dependencies
@@ -48,10 +45,11 @@ resume-screener/
 ├── templates/
 │   └── index.html          # Main UI
 └── static/
-├── css/
-│   └── style.css       # Styles
-└── js/
-└── main.js         # Frontend logic
+    ├── css/
+    │   └── style.css       # Styles
+    └── js/
+        └── main.js         # Frontend logic
+```
 
 ---
 
@@ -78,7 +76,6 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set up your API key
-
 Get your free API key from [console.groq.com](https://console.groq.com)
 
 Create a `.env` file in the root directory:
@@ -87,20 +84,19 @@ cp .env.example .env
 ```
 
 Edit `.env` and add your key:
-
+```
 GROQ_API_KEY=your_groq_key_here
+```
 
 ### 5. Run the app
 ```bash
 python app.py
 ```
-
 Open your browser and go to: **http://localhost:5000**
 
 ---
 
 ## How to Use
-
 1. Upload your resume as a PDF or paste the text
 2. Paste the job description in the right panel
 3. Click **Analyze Match**
@@ -109,7 +105,6 @@ Open your browser and go to: **http://localhost:5000**
 ---
 
 ## Deployment (Free on Render)
-
 1. Push this repo to GitHub
 2. Go to [render.com](https://render.com) → New → Web Service
 3. Connect your GitHub repo
@@ -123,7 +118,6 @@ Open your browser and go to: **http://localhost:5000**
 ---
 
 ## What I Learned
-
 - Building REST APIs with Flask
 - Integrating LLM APIs (Groq — LLaMA 3.3)
 - PDF text extraction with pdfplumber
@@ -133,7 +127,6 @@ Open your browser and go to: **http://localhost:5000**
 ---
 
 ## License
-
 MIT License — feel free to use and modify.
 
 ---
