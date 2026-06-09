@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ResumeIQ — AI Resume Screener</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -103,9 +105,14 @@
     .strengths li::before { background: var(--accent); }
     .improvements li::before { background: var(--warn); }
     .error-box { background: var(--accent2-light); border: 1px solid #f0b9a3; border-radius: 12px; padding: 14px 18px; font-size: 14px; color: var(--accent2); margin-bottom: 20px; display: none; }
-    .copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); margin-bottom: 16px; float: right; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
-    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ── Results Action Buttons ── */
+    .results-actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+    .action-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .action-btn.pdf-btn:hover { border-color: #B7410E; color: #B7410E; }
+
     .history-section { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
     .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .history-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
@@ -123,86 +130,52 @@
     footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
     footer a { color: var(--accent); text-decoration: none; }
 
-    /* ═══════════════════════════════════════
-       MOBILE RESPONSIVE — max-width: 768px
-    ═══════════════════════════════════════ */
+    /* ── Mobile ── */
     @media (max-width: 768px) {
-
-      /* Header */
       header { padding: 0 16px; height: 56px; }
       .logo { font-size: 18px; }
       .badge { font-size: 10px; padding: 3px 8px; }
-
-      /* Hero */
       .hero { padding: 36px 16px 28px; }
       .hero h1 { font-size: 28px; line-height: 1.2; }
       .hero p { font-size: 14px; }
       .hero-tag { font-size: 10px; }
-
-      /* Template buttons */
       .tpl-btn { font-size: 12px; padding: 7px 12px; }
-
-      /* Container & Grid */
       .container { padding: 0 16px 60px; }
       .grid { grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
       .card { padding: 20px 16px; }
       .card-title { font-size: 18px; }
-
-      /* Tabs */
       .tab { padding: 8px 12px; font-size: 12px; }
-
-      /* Upload zone */
       .upload-zone { padding: 28px 16px; }
-
-      /* Textarea */
       textarea { min-height: 140px; font-size: 13px; }
-
-      /* Analyze button — full width on mobile */
       .analyze-wrap { margin-bottom: 28px; }
       .btn-analyze { width: 100%; justify-content: center; padding: 16px 24px; font-size: 14px; border-radius: 14px; }
-
-      /* Score card — stack vertically */
       .score-card { flex-direction: column; text-align: center; gap: 16px; padding: 24px 16px; }
       .score-circle { width: 100px; height: 100px; }
       .score-num { font-size: 36px; }
       .score-summary { font-size: 14px; }
       .verdict-pill { font-size: 12px; }
-
-      /* Results grid — single column */
       .results-grid { grid-template-columns: 1fr; gap: 14px; }
       .result-card { padding: 18px 14px; }
       .result-card-title { font-size: 11px; }
       .tag { font-size: 12px; padding: 4px 10px; }
       .item-list li { font-size: 13px; }
-
-      /* Copy button */
-      .copy-btn { float: none; width: 100%; text-align: center; margin-bottom: 12px; padding: 10px; }
-
-      /* History section */
+      .results-actions { justify-content: stretch; }
+      .action-btn { flex: 1; text-align: center; }
       .history-section { padding: 0 16px 48px; }
       .history-title { font-size: 18px; }
       .history-card { gap: 12px; padding: 14px 12px; }
       .history-score { font-size: 28px; min-width: 48px; }
       .history-jd { font-size: 12px; }
-      .history-verdict { font-size: 11px; padding: 3px 8px; display: none; }
-
-      /* Highlight box */
+      .history-verdict { display: none; }
       #highlightBox { max-height: 200px; }
       #highlightedText { font-size: 12px; }
-
-      /* Footer */
       footer { padding: 20px 16px; font-size: 12px; }
     }
-
-    /* ═══════════════════════════════════════
-       EXTRA SMALL — max-width: 400px
-    ═══════════════════════════════════════ */
     @media (max-width: 400px) {
       .hero h1 { font-size: 24px; }
       .tpl-btn { font-size: 11px; padding: 6px 10px; }
       .score-circle { width: 88px; height: 88px; }
       .score-num { font-size: 30px; }
-      .history-card { gap: 8px; }
       .history-score { font-size: 24px; min-width: 40px; }
     }
   </style>
@@ -234,8 +207,6 @@
 <div class="container">
   <div class="error-box" id="errorBox"></div>
   <div class="grid">
-
-    <!-- Resume Card -->
     <div class="card">
       <div class="card-label">
         <div class="card-num">1</div>
@@ -245,8 +216,6 @@
         <button class="tab active" onclick="switchTab('upload')">Upload PDF</button>
         <button class="tab" onclick="switchTab('paste')">Paste Text</button>
       </div>
-
-      <!-- Upload Tab -->
       <div id="uploadTab">
         <div class="upload-zone" id="dropZone">
           <input type="file" id="pdfInput" accept=".pdf" onchange="handleFile(this)"/>
@@ -260,8 +229,6 @@
           <button class="file-remove" onclick="removeFile()">×</button>
         </div>
       </div>
-
-      <!-- Paste Tab -->
       <div id="pasteTab" style="display:none;">
         <textarea id="resumeText" placeholder="Paste your resume text here..." oninput="clearHighlights()"></textarea>
         <div id="highlightBox" style="display:none;">
@@ -278,7 +245,6 @@
       </div>
     </div>
 
-    <!-- JD Card -->
     <div class="card">
       <div class="card-label">
         <div class="card-num">2</div>
@@ -298,8 +264,12 @@
   </div>
 
   <div id="results">
-    <button class="copy-btn" id="copyBtn" onclick="copyResults()">📋 Copy Results</button>
-    <div style="clear:both;"></div>
+    <!-- Action Buttons: Copy + Export PDF side by side -->
+    <div class="results-actions">
+      <button class="action-btn" id="copyBtn" onclick="copyResults()">📋 Copy Results</button>
+      <button class="action-btn pdf-btn" onclick="exportPDF()">📄 Export PDF</button>
+    </div>
+
     <div class="score-card">
       <div class="score-circle">
         <div class="score-num" id="scoreNum">—</div>
@@ -311,6 +281,7 @@
         <div class="score-bar-wrap"><div class="score-bar" id="scoreBar" style="width:0%"></div></div>
       </div>
     </div>
+
     <div class="results-grid">
       <div class="result-card">
         <div class="result-card-title"><span style="background:var(--accent)"></span>Matched Keywords</div>
@@ -350,8 +321,7 @@
 <script>
   // ── JD Templates ──
   const JD_TEMPLATES = {
-    python: {
-      text: `We are looking for a skilled Python Developer to join our backend engineering team.
+    python: { text: `We are looking for a skilled Python Developer to join our backend engineering team.
 
 Key Responsibilities:
 - Design and develop scalable REST APIs using Flask or FastAPI
@@ -371,10 +341,8 @@ Requirements:
 Nice to have:
 - Experience with cloud platforms (AWS, GCP, Azure)
 - Knowledge of message queues (Celery, RabbitMQ)
-- Contributions to open-source projects`
-    },
-    aiml: {
-      text: `We are hiring an AI/ML Engineer to build and deploy intelligent systems at scale.
+- Contributions to open-source projects` },
+    aiml: { text: `We are hiring an AI/ML Engineer to build and deploy intelligent systems at scale.
 
 Key Responsibilities:
 - Design, train, and evaluate machine learning models
@@ -394,10 +362,8 @@ Requirements:
 Nice to have:
 - Experience with vector databases (Pinecone, Weaviate)
 - Knowledge of MLOps and model deployment pipelines
-- Published research or Kaggle competition experience`
-    },
-    data: {
-      text: `We are looking for a Data Analyst to turn raw data into actionable business insights.
+- Published research or Kaggle competition experience` },
+    data: { text: `We are looking for a Data Analyst to turn raw data into actionable business insights.
 
 Key Responsibilities:
 - Analyze large datasets to identify trends, patterns, and anomalies
@@ -416,10 +382,8 @@ Requirements:
 Nice to have:
 - Experience with Google Analytics or similar tools
 - Knowledge of data warehouses (BigQuery, Snowflake, Redshift)
-- Familiarity with Excel advanced features and pivot tables`
-    },
-    fullstack: {
-      text: `We are seeking a Full Stack Developer to build end-to-end web applications.
+- Familiarity with Excel advanced features and pivot tables` },
+    fullstack: { text: `We are seeking a Full Stack Developer to build end-to-end web applications.
 
 Key Responsibilities:
 - Develop responsive frontend interfaces using React or Vue.js
@@ -439,8 +403,7 @@ Requirements:
 Nice to have:
 - Experience with Next.js or Nuxt.js
 - Knowledge of WebSockets and real-time applications
-- Understanding of CI/CD pipelines and DevOps basics`
-    }
+- Understanding of CI/CD pipelines and DevOps basics` }
   };
 
   function fillTemplate(key, btn) {
@@ -465,8 +428,7 @@ Nice to have:
     if (!pattern) return;
     const regex = new RegExp(`(${pattern})`, 'gi');
     const highlighted = text.replace(regex, (match) => {
-      const lower = match.toLowerCase();
-      const isMatched = matched.some(k => k.toLowerCase() === lower);
+      const isMatched = matched.some(k => k.toLowerCase() === match.toLowerCase());
       return `<span class="${isMatched ? 'hl-matched' : 'hl-missing'}">${match}</span>`;
     });
     document.getElementById('highlightedText').innerHTML = highlighted;
@@ -479,6 +441,144 @@ Nice to have:
     document.getElementById('highlightBox').style.display = 'none';
     document.getElementById('hlLegend').style.display = 'none';
     document.getElementById('resumeText').style.display = 'block';
+  }
+
+  // ── Export PDF ──
+  function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pw = 210; // page width
+    const margin = 20;
+    const usable = pw - margin * 2;
+    let y = 20;
+
+    // helper: add text with word wrap, returns new y
+    function addText(text, x, startY, maxW, size, style, color) {
+      doc.setFontSize(size);
+      doc.setFont('helvetica', style || 'normal');
+      if (color) doc.setTextColor(...color);
+      else doc.setTextColor(26, 23, 20);
+      const lines = doc.splitTextToSize(String(text), maxW);
+      doc.text(lines, x, startY);
+      return startY + lines.length * (size * 0.4);
+    }
+
+    // helper: check page break
+    function checkPage(neededY) {
+      if (neededY > 270) { doc.addPage(); return 20; }
+      return neededY;
+    }
+
+    // ── Header bar ──
+    doc.setFillColor(26, 23, 20);
+    doc.rect(0, 0, pw, 28, 'F');
+    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('ResumeIQ', margin, 13);
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(200, 200, 200);
+    doc.text('AI-Powered Resume Analysis Report', margin, 21);
+    doc.setTextColor(200, 200, 200);
+    doc.text(new Date().toLocaleString(), pw - margin, 21, { align: 'right' });
+    y = 38;
+
+    // ── Score section ──
+    const score = parseInt(document.getElementById('scoreNum').textContent) || 0;
+    const verdict = document.getElementById('verdictPill').textContent.trim().replace(/[🟢🔵🟡🔴]/g, '').trim();
+    const summary = document.getElementById('summary').textContent;
+
+    // Score circle (filled rectangle as stand-in)
+    let scoreColor = score >= 70 ? [45, 106, 79] : score >= 45 ? [199, 123, 47] : [183, 65, 14];
+    doc.setFillColor(...scoreColor);
+    doc.roundedRect(margin, y, 36, 36, 5, 5, 'F');
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(String(score), margin + 18, y + 16, { align: 'center' });
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text('/ 100', margin + 18, y + 24, { align: 'center' });
+
+    // Verdict pill
+    doc.setFillColor(...scoreColor.map(c => Math.min(255, c + 160)));
+    doc.roundedRect(margin + 42, y, 60, 10, 3, 3, 'F');
+    doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...scoreColor);
+    doc.text(verdict, margin + 72, y + 7, { align: 'center' });
+
+    // Summary text
+    y = addText(summary, margin + 42, y + 16, usable - 42, 10, 'normal', [60, 60, 60]);
+    y += 8;
+
+    // ── Score bar ──
+    doc.setFillColor(230, 230, 230);
+    doc.roundedRect(margin, y, usable, 5, 2, 2, 'F');
+    doc.setFillColor(...scoreColor);
+    doc.roundedRect(margin, y, usable * (score / 100), 5, 2, 2, 'F');
+    y += 14;
+
+    // ── Section helper ──
+    function addSection(title, dotColor, content, isTagList) {
+      y = checkPage(y + 10);
+      // Section title
+      doc.setFillColor(...dotColor);
+      doc.circle(margin + 3, y + 3, 2, 'F');
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.setTextColor(138, 129, 120);
+      doc.text(title.toUpperCase(), margin + 8, y + 5);
+      y += 10;
+
+      if (isTagList) {
+        // Draw tags
+        let tx = margin;
+        const tagH = 8; const tagPad = 4;
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        content.forEach(tag => {
+          const tw = doc.getTextWidth(tag) + tagPad * 2;
+          if (tx + tw > pw - margin) { tx = margin; y += tagH + 3; }
+          y = checkPage(y);
+          doc.setFillColor(...dotColor.map(c => Math.min(255, c + 150)));
+          doc.roundedRect(tx, y - 1, tw, tagH, 2, 2, 'F');
+          doc.setTextColor(...dotColor);
+          doc.text(tag, tx + tagPad, y + 5);
+          tx += tw + 4;
+        });
+        y += tagH + 6;
+      } else {
+        // Bullet list
+        content.forEach(item => {
+          y = checkPage(y + 6);
+          doc.setFillColor(...dotColor);
+          doc.circle(margin + 3, y + 2, 1.5, 'F');
+          y = addText(item, margin + 8, y, usable - 8, 10, 'normal', [40, 40, 40]);
+          y += 2;
+        });
+        y += 4;
+      }
+    }
+
+    // ── Matched Keywords ──
+    const matched = [...document.getElementById('matchedKeywords').querySelectorAll('.tag')].map(t => t.textContent);
+    const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent);
+    const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => li.textContent);
+    const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => li.textContent);
+
+    if (matched.length) addSection('Matched Keywords', [45, 106, 79], matched, true);
+    if (missing.length) addSection('Missing Keywords', [183, 65, 14], missing, true);
+    if (strengths.length) addSection('Strengths', [45, 106, 79], strengths, false);
+    if (improvements.length) addSection('Areas to Improve', [199, 123, 47], improvements, false);
+
+    // ── Footer ──
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(220, 220, 220);
+      doc.line(margin, 285, pw - margin, 285);
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(160, 160, 160);
+      doc.text('Generated by ResumeIQ — resumeiq-55h8.onrender.com', margin, 290);
+      doc.text(`Page ${i} of ${pageCount}`, pw - margin, 290, { align: 'right' });
+    }
+
+    doc.save('ResumeIQ_Analysis.pdf');
   }
 
   // ── Score History ──
@@ -618,10 +718,10 @@ Nice to have:
     const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent).join(', ');
     const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
     const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => '• ' + li.textContent).join('\n');
-    const text = ['📊 ResumeIQ Analysis Report','─────────────────────────',
+    const text = ['ResumeIQ Analysis Report','─────────────────────────',
       `Score     : ${score}/100`, `Verdict   : ${verdict.trim()}`, `Summary   : ${summary}`, '',
-      `✅ Matched Keywords: ${matched || 'None'}`, `❌ Missing Keywords: ${missing || 'None'}`, '',
-      '💪 Strengths:', strengths, '', '📈 Areas to Improve:', improvements, '',
+      `Matched Keywords: ${matched || 'None'}`, `Missing Keywords: ${missing || 'None'}`, '',
+      'Strengths:', strengths, '', 'Areas to Improve:', improvements, '',
       `Generated by ResumeIQ — ${new Date().toLocaleString()}`].join('\n');
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
