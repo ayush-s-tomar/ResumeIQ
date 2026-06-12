@@ -118,10 +118,12 @@
     .cl-content { display: none; }
     .cl-textarea { width: 100%; min-height: 320px; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.8; resize: vertical; outline: none; color: var(--text); background: var(--surface2); transition: border-color 0.2s; }
     .cl-textarea:focus { border-color: var(--accent); }
-    .cl-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; }
+    .cl-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; flex-wrap: wrap; }
     .cl-copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text-muted); transition: all 0.2s; }
     .cl-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
     .cl-copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .cl-pdf-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text-muted); transition: all 0.2s; }
+    .cl-pdf-btn:hover { border-color: #B7410E; color: #B7410E; }
     .cl-edit-btn { background: var(--text); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; }
     .cl-edit-btn:hover { opacity: 0.85; }
     .cl-error { display: none; background: var(--accent2-light); border: 1px solid #f0b9a3; border-radius: 10px; padding: 14px; font-size: 14px; color: var(--accent2); margin-top: 12px; }
@@ -185,6 +187,8 @@
       footer { padding: 20px 16px; font-size: 12px; }
       .cl-modal { padding: 20px 16px; margin: 16px auto; }
       .cl-textarea { min-height: 240px; font-size: 13px; }
+      .cl-actions { justify-content: stretch; }
+      .cl-copy-btn, .cl-pdf-btn, .cl-edit-btn { flex: 1; text-align: center; }
     }
     @media (max-width: 400px) {
       .hero h1 { font-size: 24px; }
@@ -343,6 +347,7 @@
       <textarea class="cl-textarea" id="clText" readonly></textarea>
       <div class="cl-actions">
         <button class="cl-copy-btn" id="clCopyBtn" onclick="copyCoverLetter()">📋 Copy</button>
+        <button class="cl-pdf-btn" onclick="downloadCoverLetterPDF()">📥 Download PDF</button>
         <button class="cl-edit-btn" onclick="editCoverLetter()">✏️ Edit</button>
       </div>
       <p class="cl-note">💡 Click Edit to customize before sending</p>
@@ -485,12 +490,10 @@ Nice to have:
   function openCoverLetter() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
     const resumeText = document.getElementById('resumeText').value.trim();
-
     if (!jobDesc) return showError('Please paste a job description first.');
     if (currentTab === 'upload') return showError('Cover letter works with the Paste Text tab. Please paste your resume text.');
     if (!resumeText) return showError('Please paste your resume text to generate a cover letter.');
 
-    // Reset modal state
     document.getElementById('clLoading').style.display = 'block';
     document.getElementById('clContent').style.display = 'none';
     document.getElementById('clError').style.display = 'none';
@@ -544,12 +547,89 @@ Nice to have:
     ta.focus();
   }
 
-  // Close modal when clicking backdrop
+  // ── Cover Letter PDF Download ──
+  function downloadCoverLetterPDF() {
+    const text = document.getElementById('clText').value.trim();
+    if (!text) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pw = 210;
+    const margin = 25;
+    const usable = pw - margin * 2;
+    let y = 20;
+
+    // ── Header bar ──
+    doc.setFillColor(26, 23, 20);
+    doc.rect(0, 0, pw, 22, 'F');
+    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('ResumeIQ', margin, 10);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 180, 180);
+    doc.text('AI-Generated Cover Letter', margin, 17);
+    doc.text(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }), pw - margin, 17, { align: 'right' });
+    y = 34;
+
+    // ── "Cover Letter" title ──
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(26, 23, 20);
+    doc.text('Cover Letter', margin, y);
+    y += 4;
+
+    // ── Divider line ──
+    doc.setDrawColor(45, 106, 79);
+    doc.setLineWidth(0.8);
+    doc.line(margin, y, pw - margin, y);
+    y += 10;
+
+    // ── Cover letter body ──
+    // Split by paragraphs first, then wrap each
+    const paragraphs = text.split(/\n\n+/);
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(40, 40, 40);
+
+    paragraphs.forEach((para, index) => {
+      const cleanPara = para.replace(/\n/g, ' ').trim();
+      if (!cleanPara) return;
+
+      const lines = doc.splitTextToSize(cleanPara, usable);
+
+      // Check if we need a new page
+      const neededHeight = lines.length * 5.5;
+      if (y + neededHeight > 272) {
+        doc.addPage();
+        y = 20;
+      }
+
+      doc.text(lines, margin, y);
+      y += neededHeight + (index < paragraphs.length - 1 ? 6 : 0);
+    });
+
+    // ── Footer ──
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.3);
+      doc.line(margin, 285, pw - margin, 285);
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.setTextColor(160, 160, 160);
+      doc.text('Generated by ResumeIQ — resumeiq-55h8.onrender.com', margin, 290);
+      if (pageCount > 1) {
+        doc.text(`Page ${i} of ${pageCount}`, pw - margin, 290, { align: 'right' });
+      }
+    }
+
+    doc.save('Cover_Letter_ResumeIQ.pdf');
+  }
+
+  // Close modal on backdrop click
   document.getElementById('clModal').addEventListener('click', function(e) {
     if (e.target === this) closeCoverLetter();
   });
 
-  // ── Export PDF ──
+  // ── Export Analysis PDF ──
   function exportPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -587,12 +667,10 @@ Nice to have:
     doc.text(String(score), margin + 18, y + 16, { align: 'center' });
     doc.setFontSize(8); doc.setFont('helvetica', 'normal');
     doc.text('/ 100', margin + 18, y + 24, { align: 'center' });
-
     doc.setFillColor(...scoreColor.map(c => Math.min(255, c + 160)));
     doc.roundedRect(margin + 42, y, 60, 10, 3, 3, 'F');
     doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...scoreColor);
     doc.text(verdict, margin + 72, y + 7, { align: 'center' });
-
     y = addText(summary, margin + 42, y + 16, usable - 42, 10, 'normal', [60, 60, 60]);
     y += 8;
     doc.setFillColor(230, 230, 230); doc.roundedRect(margin, y, usable, 5, 2, 2, 'F');
@@ -825,14 +903,11 @@ Nice to have:
 
       document.getElementById('scoreNum').textContent = data.match_score;
       document.getElementById('summary').textContent = data.summary;
-
       const pill = document.getElementById('verdictPill');
       pill.className = 'verdict-pill ' + getVerdictClass(data.verdict);
       pill.textContent = getVerdictEmoji(data.verdict) + '  ' + data.verdict;
-
       document.getElementById('scoreBar').style.width = '0%';
       setTimeout(() => document.getElementById('scoreBar').style.width = data.match_score + '%', 100);
-
       document.getElementById('matchedKeywords').innerHTML = data.matched_keywords.map(k => '<span class="tag matched">' + k + '</span>').join('');
       document.getElementById('missingKeywords').innerHTML = data.missing_keywords.map(k => '<span class="tag missing">' + k + '</span>').join('');
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
@@ -841,10 +916,8 @@ Nice to have:
       if (currentTab === 'paste') {
         highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
       }
-
       document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
       saveToHistory(data, jobDesc);
-
       document.getElementById('results').style.display = 'block';
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
