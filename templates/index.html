@@ -104,30 +104,46 @@
     .action-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
     .action-btn.pdf-btn:hover { border-color: #B7410E; color: #B7410E; }
     .action-btn.cl-btn:hover { border-color: #1B6CA8; color: #1B6CA8; }
+    .action-btn.ip-btn:hover { border-color: var(--warn); color: var(--warn); }
+
+    /* ── Shared Modal Styles ── */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; overflow-y: auto; padding: 20px; }
+    .modal-box { background: var(--surface); border-radius: var(--radius); max-width: 680px; margin: 40px auto; padding: 32px; position: relative; box-shadow: 0 8px 40px rgba(0,0,0,0.2); animation: fadeUp 0.3s ease; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 4px; transition: color 0.2s; }
+    .modal-close:hover { color: var(--text); }
+    .modal-loading { display: none; text-align: center; padding: 40px 0; }
+    .modal-spinner { width: 32px; height: 32px; border: 3px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
+    .modal-loading p { font-size: 14px; font-weight: 500; color: var(--accent); }
+    .modal-error { display: none; background: var(--accent2-light); border: 1px solid #f0b9a3; border-radius: 10px; padding: 14px; font-size: 14px; color: var(--accent2); margin-top: 12px; }
 
     /* ── Cover Letter Modal ── */
-    .cl-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; overflow-y: auto; padding: 20px; }
-    .cl-modal { background: var(--surface); border-radius: var(--radius); max-width: 680px; margin: 40px auto; padding: 32px; position: relative; box-shadow: 0 8px 40px rgba(0,0,0,0.2); animation: fadeUp 0.3s ease; }
-    .cl-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .cl-modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
-    .cl-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 4px; transition: color 0.2s; }
-    .cl-close:hover { color: var(--text); }
-    .cl-loading { display: none; text-align: center; padding: 40px 0; }
-    .cl-spinner { width: 32px; height: 32px; border: 3px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
-    .cl-loading p { font-size: 14px; font-weight: 500; color: var(--accent); }
     .cl-content { display: none; }
     .cl-textarea { width: 100%; min-height: 320px; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.8; resize: vertical; outline: none; color: var(--text); background: var(--surface2); transition: border-color 0.2s; }
     .cl-textarea:focus { border-color: var(--accent); }
     .cl-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; flex-wrap: wrap; }
-    .cl-copy-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text-muted); transition: all 0.2s; }
-    .cl-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .cl-copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-    .cl-pdf-btn { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text-muted); transition: all 0.2s; }
-    .cl-pdf-btn:hover { border-color: #B7410E; color: #B7410E; }
-    .cl-edit-btn { background: var(--text); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; }
-    .cl-edit-btn:hover { opacity: 0.85; }
-    .cl-error { display: none; background: var(--accent2-light); border: 1px solid #f0b9a3; border-radius: 10px; padding: 14px; font-size: 14px; color: var(--accent2); margin-top: 12px; }
+    .cl-btn-sm { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--text-muted); transition: all 0.2s; }
+    .cl-btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .cl-btn-sm.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .cl-btn-sm.pdf:hover { border-color: #B7410E; color: #B7410E; }
+    .cl-btn-dark { background: var(--text); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; }
+    .cl-btn-dark:hover { opacity: 0.85; }
     .cl-note { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align: center; }
+
+    /* ── Interview Prep Modal ── */
+    .ip-content { display: none; }
+    .ip-question-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+    .ip-question-card:last-child { margin-bottom: 0; }
+    .ip-q-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .ip-q-num { width: 26px; height: 26px; background: var(--text); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .ip-q-type { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 4px; }
+    .ip-q-type.technical { background: #EAF4FB; color: #1B6CA8; }
+    .ip-q-type.behavioural { background: var(--accent-light); color: var(--accent); }
+    .ip-q-type.situational { background: var(--warn-light); color: var(--warn); }
+    .ip-question { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.5; flex: 1; }
+    .ip-tip-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .ip-tip { font-size: 13px; color: var(--text-muted); line-height: 1.6; padding: 10px 14px; background: var(--surface); border-radius: 8px; border-left: 3px solid var(--accent); }
 
     .history-section { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
     .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
@@ -175,7 +191,7 @@
       .tag { font-size: 12px; padding: 4px 10px; }
       .item-list li { font-size: 13px; }
       .results-actions { justify-content: stretch; }
-      .action-btn { flex: 1; text-align: center; padding: 8px 8px; font-size: 12px; }
+      .action-btn { flex: 1; text-align: center; padding: 8px 6px; font-size: 11px; }
       .history-section { padding: 0 16px 48px; }
       .history-title { font-size: 18px; }
       .history-card { gap: 12px; padding: 14px 12px; }
@@ -185,10 +201,10 @@
       #highlightBox { max-height: 200px; }
       #highlightedText { font-size: 12px; }
       footer { padding: 20px 16px; font-size: 12px; }
-      .cl-modal { padding: 20px 16px; margin: 16px auto; }
+      .modal-box { padding: 20px 16px; margin: 16px auto; }
       .cl-textarea { min-height: 240px; font-size: 13px; }
       .cl-actions { justify-content: stretch; }
-      .cl-copy-btn, .cl-pdf-btn, .cl-edit-btn { flex: 1; text-align: center; }
+      .cl-btn-sm, .cl-btn-dark { flex: 1; text-align: center; }
     }
     @media (max-width: 400px) {
       .hero h1 { font-size: 24px; }
@@ -284,9 +300,10 @@
 
   <div id="results">
     <div class="results-actions">
-      <button class="action-btn" id="copyBtn" onclick="copyResults()">📋 Copy Results</button>
+      <button class="action-btn" id="copyBtn" onclick="copyResults()">📋 Copy</button>
       <button class="action-btn pdf-btn" onclick="exportPDF()">📄 Export PDF</button>
       <button class="action-btn cl-btn" onclick="openCoverLetter()">✉️ Cover Letter</button>
+      <button class="action-btn ip-btn" onclick="openInterviewPrep()">🎯 Interview Prep</button>
     </div>
 
     <div class="score-card">
@@ -333,26 +350,42 @@
 </div>
 
 <!-- ── Cover Letter Modal ── -->
-<div class="cl-modal-backdrop" id="clModal">
-  <div class="cl-modal">
-    <div class="cl-modal-header">
-      <h3 class="cl-modal-title">✉️ Cover Letter</h3>
-      <button class="cl-close" onclick="closeCoverLetter()">×</button>
+<div class="modal-backdrop" id="clModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">✉️ Cover Letter</h3>
+      <button class="modal-close" onclick="closeCoverLetter()">×</button>
     </div>
-    <div class="cl-loading" id="clLoading">
-      <div class="cl-spinner"></div>
+    <div class="modal-loading" id="clLoading">
+      <div class="modal-spinner"></div>
       <p>Generating your cover letter...</p>
     </div>
     <div class="cl-content" id="clContent">
       <textarea class="cl-textarea" id="clText" readonly></textarea>
       <div class="cl-actions">
-        <button class="cl-copy-btn" id="clCopyBtn" onclick="copyCoverLetter()">📋 Copy</button>
-        <button class="cl-pdf-btn" onclick="downloadCoverLetterPDF()">📥 Download PDF</button>
-        <button class="cl-edit-btn" onclick="editCoverLetter()">✏️ Edit</button>
+        <button class="cl-btn-sm" id="clCopyBtn" onclick="copyCoverLetter()">📋 Copy</button>
+        <button class="cl-btn-sm pdf" onclick="downloadCoverLetterPDF()">📥 Download PDF</button>
+        <button class="cl-btn-dark" onclick="editCoverLetter()">✏️ Edit</button>
       </div>
       <p class="cl-note">💡 Click Edit to customize before sending</p>
     </div>
-    <div class="cl-error" id="clError"></div>
+    <div class="modal-error" id="clError"></div>
+  </div>
+</div>
+
+<!-- ── Interview Prep Modal ── -->
+<div class="modal-backdrop" id="ipModal">
+  <div class="modal-box" style="max-width:740px;">
+    <div class="modal-header">
+      <h3 class="modal-title">🎯 Interview Prep</h3>
+      <button class="modal-close" onclick="closeInterviewPrep()">×</button>
+    </div>
+    <div class="modal-loading" id="ipLoading">
+      <div class="modal-spinner"></div>
+      <p>Generating your interview questions...</p>
+    </div>
+    <div class="ip-content" id="ipContent"></div>
+    <div class="modal-error" id="ipError"></div>
   </div>
 </div>
 
@@ -486,6 +519,23 @@ Nice to have:
     document.getElementById('resumeText').style.display = 'block';
   }
 
+  // ── Modal Helpers ──
+  function openModal(id) {
+    document.getElementById(id).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Close modals on backdrop click
+  ['clModal','ipModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) closeModal(id);
+    });
+  });
+
   // ── Cover Letter ──
   function openCoverLetter() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
@@ -497,8 +547,7 @@ Nice to have:
     document.getElementById('clLoading').style.display = 'block';
     document.getElementById('clContent').style.display = 'none';
     document.getElementById('clError').style.display = 'none';
-    document.getElementById('clModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    openModal('clModal');
 
     const formData = new FormData();
     formData.append('resume_text', resumeText);
@@ -526,16 +575,12 @@ Nice to have:
       });
   }
 
-  function closeCoverLetter() {
-    document.getElementById('clModal').style.display = 'none';
-    document.body.style.overflow = '';
-  }
+  function closeCoverLetter() { closeModal('clModal'); }
 
   function copyCoverLetter() {
     navigator.clipboard.writeText(document.getElementById('clText').value).then(() => {
       const btn = document.getElementById('clCopyBtn');
-      btn.textContent = '✅ Copied!';
-      btn.classList.add('copied');
+      btn.textContent = '✅ Copied!'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
     });
   }
@@ -547,87 +592,105 @@ Nice to have:
     ta.focus();
   }
 
-  // ── Cover Letter PDF Download ──
   function downloadCoverLetterPDF() {
     const text = document.getElementById('clText').value.trim();
     if (!text) return;
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const pw = 210;
-    const margin = 25;
-    const usable = pw - margin * 2;
+    const pw = 210, margin = 25, usable = pw - margin * 2;
     let y = 20;
-
-    // ── Header bar ──
-    doc.setFillColor(26, 23, 20);
-    doc.rect(0, 0, pw, 22, 'F');
-    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(26, 23, 20); doc.rect(0, 0, pw, 22, 'F');
+    doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
     doc.text('ResumeIQ', margin, 10);
-    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(180, 180, 180);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(180, 180, 180);
     doc.text('AI-Generated Cover Letter', margin, 17);
     doc.text(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }), pw - margin, 17, { align: 'right' });
     y = 34;
-
-    // ── "Cover Letter" title ──
-    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
-    doc.setTextColor(26, 23, 20);
-    doc.text('Cover Letter', margin, y);
-    y += 4;
-
-    // ── Divider line ──
-    doc.setDrawColor(45, 106, 79);
-    doc.setLineWidth(0.8);
-    doc.line(margin, y, pw - margin, y);
-    y += 10;
-
-    // ── Cover letter body ──
-    // Split by paragraphs first, then wrap each
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.setTextColor(26, 23, 20);
+    doc.text('Cover Letter', margin, y); y += 4;
+    doc.setDrawColor(45, 106, 79); doc.setLineWidth(0.8);
+    doc.line(margin, y, pw - margin, y); y += 10;
     const paragraphs = text.split(/\n\n+/);
-    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(40, 40, 40);
-
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal'); doc.setTextColor(40, 40, 40);
     paragraphs.forEach((para, index) => {
       const cleanPara = para.replace(/\n/g, ' ').trim();
       if (!cleanPara) return;
-
       const lines = doc.splitTextToSize(cleanPara, usable);
-
-      // Check if we need a new page
       const neededHeight = lines.length * 5.5;
-      if (y + neededHeight > 272) {
-        doc.addPage();
-        y = 20;
-      }
-
+      if (y + neededHeight > 272) { doc.addPage(); y = 20; }
       doc.text(lines, margin, y);
       y += neededHeight + (index < paragraphs.length - 1 ? 6 : 0);
     });
-
-    // ── Footer ──
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setDrawColor(220, 220, 220);
-      doc.setLineWidth(0.3);
+      doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3);
       doc.line(margin, 285, pw - margin, 285);
-      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-      doc.setTextColor(160, 160, 160);
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(160, 160, 160);
       doc.text('Generated by ResumeIQ — resumeiq-55h8.onrender.com', margin, 290);
-      if (pageCount > 1) {
-        doc.text(`Page ${i} of ${pageCount}`, pw - margin, 290, { align: 'right' });
-      }
+      if (pageCount > 1) doc.text(`Page ${i} of ${pageCount}`, pw - margin, 290, { align: 'right' });
     }
-
     doc.save('Cover_Letter_ResumeIQ.pdf');
   }
 
-  // Close modal on backdrop click
-  document.getElementById('clModal').addEventListener('click', function(e) {
-    if (e.target === this) closeCoverLetter();
-  });
+  // ── Interview Prep ──
+  function openInterviewPrep() {
+    const jobDesc = document.getElementById('jobDesc').value.trim();
+    const resumeText = document.getElementById('resumeText').value.trim();
+    if (!jobDesc) return showError('Please paste a job description first.');
+    if (currentTab === 'upload') return showError('Interview Prep works with the Paste Text tab. Please paste your resume text.');
+    if (!resumeText) return showError('Please paste your resume text to generate interview questions.');
+
+    document.getElementById('ipLoading').style.display = 'block';
+    document.getElementById('ipContent').style.display = 'none';
+    document.getElementById('ipContent').innerHTML = '';
+    document.getElementById('ipError').style.display = 'none';
+    openModal('ipModal');
+
+    const formData = new FormData();
+    formData.append('resume_text', resumeText);
+    formData.append('job_description', jobDesc);
+
+    fetch('/interview-prep', { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('ipLoading').style.display = 'none';
+        if (data.error) {
+          document.getElementById('ipError').textContent = data.error;
+          document.getElementById('ipError').style.display = 'block';
+        } else {
+          renderInterviewQuestions(data.questions);
+        }
+      })
+      .catch(() => {
+        document.getElementById('ipLoading').style.display = 'none';
+        document.getElementById('ipError').textContent = 'Something went wrong. Please try again.';
+        document.getElementById('ipError').style.display = 'block';
+      });
+  }
+
+  function renderInterviewQuestions(questions) {
+    const container = document.getElementById('ipContent');
+    const typeClass = { 'Technical': 'technical', 'Behavioural': 'behavioural', 'Situational': 'situational' };
+
+    container.innerHTML = questions.map((q, i) => {
+      const cls = typeClass[q.type] || 'technical';
+      return `
+        <div class="ip-question-card">
+          <div class="ip-q-header">
+            <div class="ip-q-num">${i + 1}</div>
+            <div class="ip-question">${q.question}</div>
+            <div class="ip-q-type ${cls}">${q.type}</div>
+          </div>
+          <div class="ip-tip-label">💡 How to answer</div>
+          <div class="ip-tip">${q.tip}</div>
+        </div>`;
+    }).join('');
+
+    container.style.display = 'block';
+  }
+
+  function closeInterviewPrep() { closeModal('ipModal'); }
 
   // ── Export Analysis PDF ──
   function exportPDF() {
@@ -635,7 +698,6 @@ Nice to have:
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const pw = 210, margin = 20, usable = pw - margin * 2;
     let y = 20;
-
     function addText(text, x, startY, maxW, size, style, color) {
       doc.setFontSize(size); doc.setFont('helvetica', style || 'normal');
       if (color) doc.setTextColor(...color); else doc.setTextColor(26, 23, 20);
@@ -643,12 +705,7 @@ Nice to have:
       doc.text(lines, x, startY);
       return startY + lines.length * (size * 0.4);
     }
-
-    function checkPage(neededY) {
-      if (neededY > 270) { doc.addPage(); return 20; }
-      return neededY;
-    }
-
+    function checkPage(neededY) { if (neededY > 270) { doc.addPage(); return 20; } return neededY; }
     doc.setFillColor(26, 23, 20); doc.rect(0, 0, pw, 28, 'F');
     doc.setFontSize(20); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
     doc.text('ResumeIQ', margin, 13);
@@ -656,12 +713,10 @@ Nice to have:
     doc.text('AI-Powered Resume Analysis Report', margin, 21);
     doc.text(new Date().toLocaleString(), pw - margin, 21, { align: 'right' });
     y = 38;
-
     const score = parseInt(document.getElementById('scoreNum').textContent) || 0;
     const verdict = document.getElementById('verdictPill').textContent.trim().replace(/[🟢🔵🟡🔴]/g, '').trim();
     const summary = document.getElementById('summary').textContent;
     let scoreColor = score >= 70 ? [45, 106, 79] : score >= 45 ? [199, 123, 47] : [183, 65, 14];
-
     doc.setFillColor(...scoreColor); doc.roundedRect(margin, y, 36, 36, 5, 5, 'F');
     doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
     doc.text(String(score), margin + 18, y + 16, { align: 'center' });
@@ -676,16 +731,13 @@ Nice to have:
     doc.setFillColor(230, 230, 230); doc.roundedRect(margin, y, usable, 5, 2, 2, 'F');
     doc.setFillColor(...scoreColor); doc.roundedRect(margin, y, usable * (score / 100), 5, 2, 2, 'F');
     y += 14;
-
     function addSection(title, dotColor, content, isTagList) {
       y = checkPage(y + 10);
       doc.setFillColor(...dotColor); doc.circle(margin + 3, y + 3, 2, 'F');
       doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(138, 129, 120);
-      doc.text(title.toUpperCase(), margin + 8, y + 5);
-      y += 10;
+      doc.text(title.toUpperCase(), margin + 8, y + 5); y += 10;
       if (isTagList) {
-        let tx = margin;
-        const tagH = 8, tagPad = 4;
+        let tx = margin; const tagH = 8, tagPad = 4;
         doc.setFontSize(9); doc.setFont('helvetica', 'normal');
         content.forEach(tag => {
           const tw = doc.getTextWidth(tag) + tagPad * 2;
@@ -694,31 +746,26 @@ Nice to have:
           doc.setFillColor(...dotColor.map(c => Math.min(255, c + 150)));
           doc.roundedRect(tx, y - 1, tw, tagH, 2, 2, 'F');
           doc.setTextColor(...dotColor);
-          doc.text(tag, tx + tagPad, y + 5);
-          tx += tw + 4;
+          doc.text(tag, tx + tagPad, y + 5); tx += tw + 4;
         });
         y += tagH + 6;
       } else {
         content.forEach(item => {
           y = checkPage(y + 6);
           doc.setFillColor(...dotColor); doc.circle(margin + 3, y + 2, 1.5, 'F');
-          y = addText(item, margin + 8, y, usable - 8, 10, 'normal', [40, 40, 40]);
-          y += 2;
+          y = addText(item, margin + 8, y, usable - 8, 10, 'normal', [40, 40, 40]); y += 2;
         });
         y += 4;
       }
     }
-
     const matched = [...document.getElementById('matchedKeywords').querySelectorAll('.tag')].map(t => t.textContent);
     const missing = [...document.getElementById('missingKeywords').querySelectorAll('.tag')].map(t => t.textContent);
     const strengths = [...document.getElementById('strengths').querySelectorAll('li')].map(li => li.textContent);
     const improvements = [...document.getElementById('improvements').querySelectorAll('li')].map(li => li.textContent);
-
     if (matched.length) addSection('Matched Keywords', [45, 106, 79], matched, true);
     if (missing.length) addSection('Missing Keywords', [183, 65, 14], missing, true);
     if (strengths.length) addSection('Strengths', [45, 106, 79], strengths, false);
     if (improvements.length) addSection('Areas to Improve', [199, 123, 47], improvements, false);
-
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -733,7 +780,6 @@ Nice to have:
   // ── Score History ──
   const HISTORY_KEY = 'resumeiq_history';
   const MAX_HISTORY = 5;
-
   function saveToHistory(data, jobDesc) {
     let history = getHistory();
     const entry = {
@@ -748,20 +794,16 @@ Nice to have:
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     renderHistory();
   }
-
   function getHistory() {
     try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
     catch { return []; }
   }
-
   function clearHistory() { localStorage.removeItem(HISTORY_KEY); renderHistory(); }
-
   function getScoreColor(score) {
     if (score >= 70) return '#2D6A4F';
     if (score >= 45) return '#C77B2F';
     return '#B7410E';
   }
-
   function renderHistory() {
     const history = getHistory();
     const section = document.getElementById('historySection');
@@ -780,7 +822,6 @@ Nice to have:
       </div>`;
     }).join('');
   }
-
   function loadHistoryEntry(i) {
     const entry = getHistory()[i];
     if (!entry) return;
@@ -801,7 +842,6 @@ Nice to have:
 
   // ── Main App ──
   let currentTab = 'upload', selectedFile = null;
-
   function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i===0&&tab==='upload')||(i===1&&tab==='paste')));
@@ -809,7 +849,6 @@ Nice to have:
     document.getElementById('pasteTab').style.display = tab === 'paste' ? 'block' : 'none';
     if (tab === 'upload') clearHighlights();
   }
-
   function handleFile(input) {
     const file = input.files[0]; if (!file) return;
     selectedFile = file;
@@ -817,14 +856,12 @@ Nice to have:
     document.getElementById('fileName').textContent = file.name;
     document.getElementById('dropZone').style.display = 'none';
   }
-
   function removeFile() {
     selectedFile = null;
     document.getElementById('pdfInput').value = '';
     document.getElementById('fileSelected').style.display = 'none';
     document.getElementById('dropZone').style.display = 'block';
   }
-
   const dropZone = document.getElementById('dropZone');
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
@@ -838,27 +875,23 @@ Nice to have:
       dropZone.style.display = 'none';
     }
   });
-
   function showError(msg) {
     const b = document.getElementById('errorBox');
     b.textContent = msg; b.style.display = 'block';
     setTimeout(() => b.style.display = 'none', 6000);
   }
-
   function getVerdictClass(v) {
     if (v.includes('Strong')) return 'strong';
     if (v.includes('Good')) return 'good';
     if (v.includes('Partial')) return 'partial';
     return 'weak';
   }
-
   function getVerdictEmoji(v) {
     if (v.includes('Strong')) return '🟢';
     if (v.includes('Good')) return '🔵';
     if (v.includes('Partial')) return '🟡';
     return '🔴';
   }
-
   function copyResults() {
     const score = document.getElementById('scoreNum').textContent;
     const verdict = document.getElementById('verdictPill').textContent;
@@ -875,32 +908,27 @@ Nice to have:
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = '✅ Copied!'; btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '📋 Copy Results'; btn.classList.remove('copied'); }, 2500);
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
     }).catch(() => alert('Could not copy. Please copy manually.'));
   }
-
   async function analyze() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
     const resumeText = document.getElementById('resumeText').value.trim();
     if (!jobDesc) return showError('Please paste a job description.');
     if (currentTab === 'upload' && !selectedFile) return showError('Please upload a PDF resume.');
     if (currentTab === 'paste' && !resumeText) return showError('Please paste your resume text.');
-
     const btn = document.getElementById('analyzeBtn');
     btn.classList.add('loading');
     document.getElementById('loadingMsg').style.display = 'block';
     document.getElementById('results').style.display = 'none';
-
     const formData = new FormData();
     formData.append('job_description', jobDesc);
     if (currentTab === 'upload' && selectedFile) formData.append('resume_pdf', selectedFile);
     else formData.append('resume_text', resumeText);
-
     try {
       const res = await fetch('/analyze', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.error) return showError(data.error);
-
       document.getElementById('scoreNum').textContent = data.match_score;
       document.getElementById('summary').textContent = data.summary;
       const pill = document.getElementById('verdictPill');
@@ -912,15 +940,11 @@ Nice to have:
       document.getElementById('missingKeywords').innerHTML = data.missing_keywords.map(k => '<span class="tag missing">' + k + '</span>').join('');
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
       document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
-
-      if (currentTab === 'paste') {
-        highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
-      }
+      if (currentTab === 'paste') highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
       document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
       saveToHistory(data, jobDesc);
       document.getElementById('results').style.display = 'block';
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
     } catch(e) {
       showError('Something went wrong. Please try again.');
     } finally {
@@ -928,7 +952,6 @@ Nice to have:
       document.getElementById('loadingMsg').style.display = 'none';
     }
   }
-
   window.addEventListener('DOMContentLoaded', renderHistory);
 </script>
 </body>

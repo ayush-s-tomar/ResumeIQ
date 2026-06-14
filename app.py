@@ -172,5 +172,61 @@ JOB DESCRIPTION:
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 
+@app.route('/interview-prep', methods=['POST'])
+@limiter.limit("10 per hour")
+def interview_prep():
+    resume_text = request.form.get('resume_text', '').strip()
+    job_description = request.form.get('job_description', '').strip()
+
+    if not resume_text or not job_description:
+        return jsonify({'error': 'Resume and job description are required.'}), 400
+
+    if len(resume_text) < 100:
+        return jsonify({'error': 'Resume text seems too short. Please paste more content.'}), 400
+
+    prompt = f"""You are an expert technical interviewer and career coach.
+Based on the candidate's resume and the job description, generate exactly 5 likely interview questions this candidate will face.
+
+For each question:
+- Make it specific to THIS candidate and THIS role — not generic
+- Include the type: Technical / Behavioural / Situational
+- Give a concise tip on how to answer it well (2-3 sentences max)
+
+Return ONLY a valid JSON array with this exact structure:
+[
+  {{
+    "question": "<the interview question>",
+    "type": "<Technical | Behavioural | Situational>",
+    "tip": "<how to answer this well>"
+  }}
+]
+
+RESUME:
+{resume_text}
+
+JOB DESCRIPTION:
+{job_description}
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=1200
+        )
+        raw = response.choices[0].message.content.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        questions = json.loads(raw.strip())
+        return jsonify({'questions': questions})
+    except json.JSONDecodeError:
+        return jsonify({'error': 'Failed to parse AI response. Please try again.'}), 500
+    except Exception as e:
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
