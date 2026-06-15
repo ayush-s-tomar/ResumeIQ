@@ -142,10 +142,9 @@ Nice to have:
   // ── Cover Letter ──
   function openCoverLetter() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
-    const resumeText = document.getElementById('resumeText').value.trim();
+    const resumeText = lastResumeText;
     if (!jobDesc) return showError('Please paste a job description first.');
-    if (currentTab === 'upload') return showError('Cover letter works with the Paste Text tab. Please paste your resume text.');
-    if (!resumeText) return showError('Please paste your resume text to generate a cover letter.');
+    if (!resumeText) return showError('Please analyze your resume first.');
 
     document.getElementById('clLoading').style.display = 'block';
     document.getElementById('clContent').style.display = 'none';
@@ -239,10 +238,9 @@ Nice to have:
   // ── Interview Prep ──
   function openInterviewPrep() {
     const jobDesc = document.getElementById('jobDesc').value.trim();
-    const resumeText = document.getElementById('resumeText').value.trim();
+    const resumeText = lastResumeText;
     if (!jobDesc) return showError('Please paste a job description first.');
-    if (currentTab === 'upload') return showError('Interview Prep works with the Paste Text tab. Please paste your resume text.');
-    if (!resumeText) return showError('Please paste your resume text to generate interview questions.');
+    if (!resumeText) return showError('Please analyze your resume first.');
 
     document.getElementById('ipLoading').style.display = 'block';
     document.getElementById('ipContent').style.display = 'none';
@@ -445,6 +443,7 @@ Nice to have:
 
   // ── Main App ──
   let currentTab = 'upload', selectedFile = null;
+let lastResumeText = '';   // stores resume text from last analysis (works for PDF or pasted text)
   function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i===0&&tab==='upload')||(i===1&&tab==='paste')));
@@ -543,6 +542,7 @@ Nice to have:
       document.getElementById('missingKeywords').innerHTML = data.missing_keywords.map(k => '<span class="tag missing">' + k + '</span>').join('');
       document.getElementById('strengths').innerHTML = data.strengths.map(s => '<li>' + s + '</li>').join('');
       document.getElementById('improvements').innerHTML = data.improvements.map(i => '<li>' + i + '</li>').join('');
+      lastResumeText = data.resume_text || resumeText;
       if (currentTab === 'paste') highlightKeywords(resumeText, data.matched_keywords, data.missing_keywords);
       document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
       saveToHistory(data, jobDesc);

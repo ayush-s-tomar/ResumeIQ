@@ -123,6 +123,7 @@ def analyze():
 
     try:
         result = analyze_resume(resume_text, job_description)
+        result['resume_text'] = resume_text
         return jsonify(result)
     except json.JSONDecodeError:
         return jsonify({'error': 'Failed to parse AI response. Please try again.'}), 500
