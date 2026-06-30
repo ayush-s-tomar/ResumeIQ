@@ -1,31 +1,58 @@
-# ResumeAI — AI-Powered Resume Screener
-> An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions.
+# ResumeIQ — AI-Powered Resume Screener
+
+> An intelligent resume screening tool that compares your resume against a job description using the Groq AI API (LLaMA 3.3). Get a match score, keyword analysis, strengths, and actionable improvement suggestions — instantly.
+
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://resumeiq-55h8.onrender.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
 
 ## 🌐 Live Demo
-👉 https://resumeiq-55h8.onrender.com
-> ⚡ Hosted on Render free tier — may take 15-20 seconds to wake up on first visit.
+
+👉 **[resumeiq-55h8.onrender.com](https://resumeiq-55h8.onrender.com)**
+
+> ⚡ Hosted on Render's free tier — the server may take 15-20 seconds to wake up on first visit.
 
 ---
 
-## 📸 What it does
-- Upload resume PDF or paste text
-- Paste any job description
-- Get instant AI match score
-- See missing keywords and improvements
+## 📸 Demo Preview
+
+![ResumeIQ Results View](./assets/Resume_Screener_Demo.png)
+
+*Upload your resume and a job description to get an instant AI-powered match score, keyword breakdown, strengths, and improvement suggestions.*
 
 ---
 
-## Features
+## 📑 Table of Contents
+
+- [Live Demo](#-live-demo)
+- [Demo Preview](#-demo-preview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Setup & Installation](#-setup--installation)
+- [How to Use](#-how-to-use)
+- [Deployment](#️-deployment-free-on-render)
+- [Roadmap](#-roadmap)
+- [What I Learned](#-what-i-learned)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## ✨ Features
+
 - **Match Score** — Get a 0–100 ATS compatibility score
 - **Keyword Analysis** — See which keywords match and which are missing
 - **Strengths** — Understand what makes your resume stand out
-- **Improvements** — Get specific suggestions to improve your resume
+- **Improvements** — Get specific, actionable suggestions
 - **PDF Upload** — Upload your resume as a PDF or paste text directly
-- **Clean UI** — Modern dark-themed interface
+- **Clean UI** — Modern, minimal interface
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
+
 | Layer | Tech |
 |-------|------|
 | Backend | Python, Flask |
@@ -35,12 +62,13 @@
 
 ---
 
-## Project Structure
+## 📁 Project Structure
+
 ```
 resume-screener/
 ├── app.py                  # Flask backend & API logic
 ├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variable template
+├── .env.example             # Environment variable template
 ├── .gitignore
 ├── templates/
 │   └── index.html          # Main UI
@@ -53,7 +81,7 @@ resume-screener/
 
 ---
 
-## Setup & Installation
+## 🚀 Setup & Installation
 
 ### 1. Clone the repository
 ```bash
@@ -64,8 +92,10 @@ cd ResumeIQ
 ### 2. Create a virtual environment
 ```bash
 python -m venv venv
+
 # On Windows:
 venv\Scripts\activate
+
 # On Mac/Linux:
 source venv/bin/activate
 ```
@@ -76,13 +106,10 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set up your API key
-Get your free API key from [console.groq.com](https://console.groq.com)
-
-Create a `.env` file in the root directory:
+Get a free API key from [console.groq.com](https://console.groq.com), then:
 ```bash
 cp .env.example .env
 ```
-
 Edit `.env` and add your key:
 ```
 GROQ_API_KEY=your_groq_key_here
@@ -92,11 +119,12 @@ GROQ_API_KEY=your_groq_key_here
 ```bash
 python app.py
 ```
-Open your browser and go to: **http://localhost:5000**
+Open your browser at **http://localhost:5000**
 
 ---
 
-## How to Use
+## 📖 How to Use
+
 1. Upload your resume as a PDF or paste the text
 2. Paste the job description in the right panel
 3. Click **Analyze Match**
@@ -104,7 +132,8 @@ Open your browser and go to: **http://localhost:5000**
 
 ---
 
-## Deployment (Free on Render)
+## ☁️ Deployment (Free on Render)
+
 1. Push this repo to GitHub
 2. Go to [render.com](https://render.com) → New → Web Service
 3. Connect your GitHub repo
@@ -117,7 +146,8 @@ Open your browser and go to: **http://localhost:5000**
 
 ---
 
-## What I Learned
+## 🧠 What I Learned
+
 - Building REST APIs with Flask
 - Integrating LLM APIs (Groq — LLaMA 3.3)
 - PDF text extraction with pdfplumber
@@ -126,9 +156,36 @@ Open your browser and go to: **http://localhost:5000**
 
 ---
 
-## License
-MIT License — feel free to use and modify.
+## 🗺 Roadmap
+
+- [ ] Cover letter generator
+- [ ] Interview prep / mock Q&A mode
+- [ ] Export analysis report as PDF
+- [ ] Support for DOCX resume uploads
+- [ ] Resume history / saved analyses
 
 ---
 
-Built by [Ayush Singh Tomar](https://github.com/ayush-s-tomar)
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE) — feel free to use and modify.
+
+---
+
+## 👤 Author
+
+Built by **[Ayush Singh Tomar](https://github.com/ayush-s-tomar)**
+
+If you found this project useful, consider giving it a ⭐ on GitHub!
