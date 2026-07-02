@@ -7,82 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    /* ── Theme toggle button ── */
-    .theme-toggle {
-      background: none;
-      border: 1px solid var(--text-muted, #999);
-      border-radius: 999px;
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      margin-left: 12px;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-    .theme-toggle:hover { transform: scale(1.08); }
-    .theme-toggle:active { transform: scale(0.95); }
-
-    /* ── Dark theme overrides (matches style.css variable names) ── */
-    [data-theme="dark"] {
-      --bg: #15130F;
-      --surface: #211E18;
-      --surface2: #2A2620;
-      --border: #3A362D;
-      --text: #F1EDE6;
-      --text-muted: #9B9488;
-      --accent-light: #1E3A2C;
-      --accent2-light: #3D2419;
-      --warn-light: #3A2A14;
-    }
-    [data-theme="dark"] .upload-icon { background: var(--surface2); }
-    [data-theme="dark"] .tabs { background: var(--surface2); }
-    [data-theme="dark"] .hl-dot[style*="D8F3DC"] { background: var(--accent-light) !important; }
-    [data-theme="dark"] .hl-dot[style*="FDE8DF"] { background: var(--accent2-light) !important; }
-
-    /* ── Skeleton loader ── */
-    .skeleton-wrap { display: none; }
-    .skeleton-wrap.active { display: block; }
-    .sk-block {
-      background: linear-gradient(90deg, rgba(150,150,150,0.12) 25%, rgba(150,150,150,0.22) 37%, rgba(150,150,150,0.12) 63%);
-      background-size: 400% 100%;
-      animation: sk-shimmer 1.4s ease infinite;
-      border-radius: 8px;
-    }
-    @keyframes sk-shimmer {
-      0% { background-position: 100% 50%; }
-      100% { background-position: 0 50%; }
-    }
-    .sk-score-card {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    .sk-circle { width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0; }
-    .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-    .sk-line { height: 14px; }
-    .sk-line.w-30 { width: 30%; }
-    .sk-line.w-90 { width: 90%; }
-    .sk-line.w-70 { width: 70%; }
-    .sk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .sk-card { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-    .sk-tag { height: 24px; width: 70px; border-radius: 999px; display: inline-block; margin-right: 6px; }
-    @media (max-width: 700px) { .sk-grid { grid-template-columns: 1fr; } .sk-score-card { flex-direction: column; align-items: flex-start; } }
-  </style>
 </head>
 <body>
 
 <header>
   <div class="logo"><span class="logo-dot"></span>ResumeIQ</div>
-  <div style="display:flex; align-items:center;">
-    <span class="badge">AI Powered</span>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
-  </div>
+  <span class="badge">AI Powered</span>
 </header>
 
 <div class="hero">
@@ -159,38 +89,6 @@
       <div class="spinner"></div>
     </button>
     <p class="loading-msg" id="loadingMsg">🔍 Analyzing your resume, please wait...</p>
-  </div>
-
-  <!-- ── Skeleton Loader (shown while /analyze is in flight) ── -->
-  <div class="skeleton-wrap" id="skeletonWrap">
-    <div class="sk-block sk-score-card">
-      <div class="sk-block sk-circle"></div>
-      <div class="sk-lines">
-        <div class="sk-block sk-line w-30"></div>
-        <div class="sk-block sk-line w-90"></div>
-        <div class="sk-block sk-line w-70"></div>
-      </div>
-    </div>
-    <div class="sk-grid">
-      <div class="sk-block sk-card">
-        <div class="sk-block sk-line w-30"></div>
-        <div><span class="sk-block sk-tag"></span><span class="sk-block sk-tag"></span><span class="sk-block sk-tag"></span></div>
-      </div>
-      <div class="sk-block sk-card">
-        <div class="sk-block sk-line w-30"></div>
-        <div><span class="sk-block sk-tag"></span><span class="sk-block sk-tag"></span></div>
-      </div>
-      <div class="sk-block sk-card">
-        <div class="sk-block sk-line w-30"></div>
-        <div class="sk-block sk-line w-90"></div>
-        <div class="sk-block sk-line w-70"></div>
-      </div>
-      <div class="sk-block sk-card">
-        <div class="sk-block sk-line w-30"></div>
-        <div class="sk-block sk-line w-90"></div>
-        <div class="sk-block sk-line w-70"></div>
-      </div>
-    </div>
   </div>
 
   <div id="results">

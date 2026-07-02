@@ -95,39 +95,6 @@ Nice to have:
     document.getElementById('jobDesc').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // ── Theme Toggle (dark / light mode) ──
-  const THEME_KEY = 'resumeiq_theme';
-
-  function applyTheme(theme) {
-    if (theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      const btn = document.getElementById('themeToggle');
-      if (btn) btn.textContent = '☀️';
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      const btn = document.getElementById('themeToggle');
-      if (btn) btn.textContent = '🌙';
-    }
-  }
-
-  function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const next = isDark ? 'light' : 'dark';
-    localStorage.setItem(THEME_KEY, next);
-    applyTheme(next);
-  }
-
-  function initTheme() {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved) {
-      applyTheme(saved);
-      return;
-    }
-    // No saved preference yet — respect the OS-level setting
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(prefersDark ? 'dark' : 'light');
-  }
-
   // ── Keyword Highlighting ──
   function highlightKeywords(text, matched, missing) {
     if (!text.trim()) return;
@@ -554,11 +521,8 @@ let lastResumeText = '';   // stores resume text from last analysis (works for P
     if (currentTab === 'paste' && !resumeText) return showError('Please paste your resume text.');
     const btn = document.getElementById('analyzeBtn');
     btn.classList.add('loading');
-    btn.disabled = true;
     document.getElementById('loadingMsg').style.display = 'block';
     document.getElementById('results').style.display = 'none';
-    document.getElementById('skeletonWrap').classList.add('active');
-    document.getElementById('skeletonWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
     const formData = new FormData();
     formData.append('job_description', jobDesc);
     if (currentTab === 'upload' && selectedFile) formData.append('resume_pdf', selectedFile);
@@ -588,12 +552,7 @@ let lastResumeText = '';   // stores resume text from last analysis (works for P
       showError('Something went wrong. Please try again.');
     } finally {
       btn.classList.remove('loading');
-      btn.disabled = false;
       document.getElementById('loadingMsg').style.display = 'none';
-      document.getElementById('skeletonWrap').classList.remove('active');
     }
   }
-  window.addEventListener('DOMContentLoaded', () => {
-    renderHistory();
-    initTheme();
-  });
+  window.addEventListener('DOMContentLoaded', renderHistory);
