@@ -31,6 +31,7 @@
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
+- [Architecture Notes](#-architecture-notes)
 - [Project Structure](#-project-structure)
 - [Setup & Installation](#-setup--installation)
 - [Docker](#-docker)
@@ -58,8 +59,11 @@
 | 📋 **Job Templates** | Quick-fill JD templates for Python Dev, AI/ML, Data Analyst, Full Stack |
 | 🌙 **Dark Mode** | Light/dark toggle, persisted across sessions |
 | 🕐 **Score History** | Last 5 analyses saved locally for quick comparison |
-| 🔒 **Rate Limiting** | 10 requests/hour per user to prevent abuse |
+| 🔒 **Rate Limiting** | 10 requests/hour per user, shared across workers via Redis |
 | ⚡ **Response Caching** | Repeated resume+JD pairs served instantly, no extra API cost |
+| 🔁 **LLM Retry on Malformed Output** | Automatically re-prompts once with a stricter format instruction if the AI's JSON response fails to parse |
+| 🩺 **Health Check Endpoint** | `/health` reports Groq configuration and cache backend status for uptime monitoring |
+| 🖼️ **Scanned-PDF Detection** | Flags PDFs with little to no extractable text (scanned images) with a specific, actionable error |
 
 ---
 
@@ -72,12 +76,22 @@
 | PDF Parsing | pdfplumber |
 | Frontend | HTML5, CSS3, Vanilla JS |
 | PDF Export | jsPDF (client-side) |
-| Rate Limiting | Flask-Limiter |
-| Logging | Python `logging` + RotatingFileHandler |
-| Testing | pytest (18 tests, Groq calls mocked) |
+| Rate Limiting / Cache | Flask-Limiter + Redis (falls back to in-memory if `REDIS_URL` isn't set) |
+| Logging | Python `logging` + RotatingFileHandler, with per-request latency logging |
+| Testing | pytest (18+ tests, Groq calls mocked) |
 | CI/CD | GitHub Actions |
 | Containerisation | Docker |
 | Hosting | Render |
+
+---
+
+## 🏗 Architecture Notes
+
+A couple of decisions worth calling out, since they came out of deliberately fixing earlier gaps rather than defaults:
+
+- **Redis-backed cache & rate limiter, with automatic fallback.** The original version stored both in a plain Python dict / in-process memory, which silently breaks correctness the moment the app runs on more than one worker process — each worker gets its own cache (lower hit rate) and its own rate limit counter (the real limit becomes `10 × number_of_workers`, not 10). Setting a `REDIS_URL` environment variable now makes both shared and correct across processes. If Redis isn't configured or isn't reachable, the app logs a warning and falls back to in-memory storage so local development still works with zero setup.
+- **One automatic retry on malformed LLM JSON.** Asking an LLM to "return only JSON" doesn't guarantee it — an extra sentence or a missed brace used to fail the entire request. Now, if the first response doesn't parse, the app re-prompts once with an explicit "your previous response wasn't valid JSON" instruction before giving up. This meaningfully reduces failures without adding real latency in the common case (the retry only fires on the rare malformed response).
+- **Scanned-PDF detection.** A PDF that "extracts successfully" but yields almost no text is almost always a scanned image with no real text layer. Instead of surfacing a generic error, the app checks extracted length and tells the user specifically to paste text instead.
 
 ---
 
@@ -85,7 +99,7 @@
 
 ```
 ResumeIQ/
-├── app.py                      # Flask backend — all routes, caching, logging, validation
+├── app.py                      # Flask backend — routes, caching, logging, validation, LLM retry
 ├── requirements.txt            # Production dependencies (pinned)
 ├── requirements-dev.txt        # Dev/test dependencies
 ├── Dockerfile                  # One-command container build
@@ -103,7 +117,7 @@ ResumeIQ/
 │   └── js/
 │       └── main.js             # Theme toggle, skeleton, PDF export, history
 ├── tests/
-│   └── test_app.py             # 18 pytest tests, zero real API calls
+│   └── test_app.py             # pytest tests, zero real API calls
 └── .github/
     └── workflows/
         └── ci.yml              # Runs tests + Docker build on every push
@@ -143,6 +157,10 @@ cp .env.example .env
 Edit `.env`:
 ```
 GROQ_API_KEY=your_groq_key_here
+
+# Optional — enables shared cache/rate-limiting across workers.
+# If unset, the app falls back to in-memory storage automatically.
+REDIS_URL=redis://localhost:6379/0
 ```
 
 ### 5. Run the app
@@ -150,6 +168,8 @@ GROQ_API_KEY=your_groq_key_here
 python app.py
 ```
 Open **http://localhost:5000**
+
+> No Redis running locally? Leave `REDIS_URL` unset — the app detects this and falls back to in-memory caching, logging a warning so you know it happened.
 
 ---
 
@@ -171,7 +191,7 @@ Open **http://localhost:5000**
 
 ## 🧪 Running Tests
 
-The test suite covers all routes, input validation, PDF checking, caching logic, and helper functions. No real API key or Groq calls required — everything is mocked.
+The test suite covers all routes, input validation, PDF checking, caching logic, the LLM retry path, and helper functions. No real API key or Groq calls required — everything is mocked.
 
 ```bash
 # Install dev dependencies
@@ -180,8 +200,6 @@ pip install -r requirements-dev.txt
 # Run tests
 pytest tests/ -v
 ```
-
-Expected output: **18 passed**
 
 ---
 
@@ -204,7 +222,8 @@ Expected output: **18 passed**
 4. Set **Build Command**: `pip install -r requirements.txt`
 5. Set **Start Command**: `gunicorn app:app`
 6. Add environment variable: `GROQ_API_KEY` = your key
-7. Deploy!
+7. *(Optional)* Add a free Render Redis instance and set `REDIS_URL` to enable shared caching/rate-limiting across workers
+8. Deploy!
 
 ---
 
@@ -219,20 +238,27 @@ Expected output: **18 passed**
 - [x] Response caching
 - [x] Docker support
 - [x] CI pipeline with automated tests
+- [x] Redis-backed cache & rate limiter (shared across workers)
+- [x] Automatic retry on malformed LLM JSON output
+- [x] `/health` endpoint for uptime monitoring
+- [x] Scanned-PDF (no text layer) detection
+- [ ] Server-side score history (currently client-side only, no auth system yet)
 - [ ] DOCX resume upload support
 - [ ] Multi-resume comparison mode
 - [ ] Resume rewrite suggestions (AI-powered)
+- [ ] Eval set: measure AI score accuracy against human-judged resume/JD pairs
 
 ---
 
 ## 🧠 What I Learned
 
 - Building and structuring REST APIs with Flask
-- Integrating LLM APIs (Groq — LLaMA 3.3) with structured JSON prompting
-- PDF text extraction with pdfplumber and real file validation
+- Integrating LLM APIs (Groq — LLaMA 3.3) with structured JSON prompting, including handling non-deterministic malformed output with a retry strategy
+- Diagnosing and fixing a real scalability bug: in-memory cache/rate-limiter state breaking correctness across multiple worker processes, fixed with Redis and a safe fallback
+- PDF text extraction with pdfplumber, real file validation via byte-signature checking, and detecting edge cases like scanned images with no text layer
 - Input validation and rate limiting for public-facing APIs
-- Structured logging with rotating file handlers for production debugging
-- In-memory response caching with TTL to reduce API cost and latency
+- Structured logging with rotating file handlers and per-request latency tracking for production debugging
+- In-memory and Redis-backed response caching with TTL to reduce API cost and latency
 - Client-side PDF generation with jsPDF
 - Writing pytest suites with mocked external dependencies
 - Setting up GitHub Actions CI pipelines
