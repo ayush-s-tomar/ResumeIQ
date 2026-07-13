@@ -23,7 +23,7 @@
 
 ![ResumeIQ Results View](./assets/Resume_Screener_Demo.png)
 
-*Upload your resume, paste a job description, and get an instant AI-powered match score with keyword breakdown, strengths, and improvement suggestions.*
+*Upload → Match → Improve → Apply with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.*
 
 ---
 
