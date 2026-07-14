@@ -11,6 +11,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from groq import Groq
 import pdfplumber
+import redis
 from werkzeug.utils import secure_filename
 
 load_dotenv()
@@ -33,12 +34,35 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
 logger.addHandler(console_handler)
 
+# ── Redis connection (shared cache + shared rate-limit storage) ──
+# Why this exists: with more than one worker process (Gunicorn default),
+# in-memory storage is NOT shared between workers. That silently breaks
+# rate limiting (real limit becomes 10 * num_workers) and tanks the cache
+# hit rate (each worker has its own empty cache). Redis fixes both by
+# giving every worker one shared store. If REDIS_URL isn't set or Redis
+# isn't reachable, we fall back to in-memory so local dev needs zero setup.
+REDIS_URL = os.environ.get("REDIS_URL")
+redis_client = None
+CACHE_BACKEND = "in-memory"
+
+if REDIS_URL:
+    try:
+        redis_client = redis.from_url(REDIS_URL, socket_connect_timeout=2)
+        redis_client.ping()
+        CACHE_BACKEND = "redis"
+        logger.info("Connected to Redis for cache + rate limiting.")
+    except Exception as e:
+        logger.warning(f"REDIS_URL set but connection failed ({e}). Falling back to in-memory.")
+        redis_client = None
+else:
+    logger.warning("REDIS_URL not set. Using in-memory cache/rate-limiting (single-worker only).")
+
 # ── Rate Limiter ──
 limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=[],
-    storage_uri="memory://"
+    storage_uri=REDIS_URL if (REDIS_URL and CACHE_BACKEND == "redis") else "memory://"
 )
 
 os.makedirs('/tmp/uploads', exist_ok=True)
@@ -54,37 +78,56 @@ MAX_RESUME_LENGTH = 15_000       # ~3-4 pages of text, generous for any real res
 MIN_JD_LENGTH = 30
 MAX_JD_LENGTH = 8_000            # generous for even a verbose JD posting
 
+# Below this, extracted "text" is treated as noise (e.g. a scanned image
+# with no real text layer, or a mostly-blank page).
+MIN_EXTRACTED_TEXT_LENGTH = 50
+
 # ── Groq client ──
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-# ── Simple in-memory response cache ──
-# Keyed by a hash of (endpoint + resume_text + job_description)
-# Avoids paying for / waiting on a fresh Groq call when the same
-# resume + JD pair is analyzed again (e.g. user double-clicks, or
-# revisits the same JD with the same resume).
-CACHE = {}
+# ── In-memory fallback cache (only used when Redis is unavailable) ──
+_LOCAL_CACHE = {}
 CACHE_TTL_SECONDS = 60 * 60  # 1 hour
 
 
 def cache_get(key):
-    entry = CACHE.get(key)
+    if redis_client:
+        try:
+            raw = redis_client.get(key)
+            if raw:
+                logger.info(f"Cache hit (redis) for key {key[:10]}...")
+                return json.loads(raw)
+            return None
+        except Exception as e:
+            logger.error(f"Redis GET failed, treating as cache miss: {e}")
+            return None
+
+    entry = _LOCAL_CACHE.get(key)
     if not entry:
         return None
     value, expires_at = entry
     if time.time() > expires_at:
-        CACHE.pop(key, None)
+        _LOCAL_CACHE.pop(key, None)
         return None
-    logger.info(f"Cache hit for key {key[:10]}...")
+    logger.info(f"Cache hit (memory) for key {key[:10]}...")
     return value
 
 
 def cache_set(key, value):
-    CACHE[key] = (value, time.time() + CACHE_TTL_SECONDS)
+    if redis_client:
+        try:
+            redis_client.setex(key, CACHE_TTL_SECONDS, json.dumps(value))
+            return
+        except Exception as e:
+            logger.error(f"Redis SET failed, skipping cache write: {e}")
+            return
+
+    _LOCAL_CACHE[key] = (value, time.time() + CACHE_TTL_SECONDS)
 
 
 def make_cache_key(*parts):
     raw = "||".join(parts)
-    return hashlib.sha256(raw.encode('utf-8')).hexdigest()
+    return "resumeiq:" + hashlib.sha256(raw.encode('utf-8')).hexdigest()
 
 
 def allowed_file(filename):
@@ -121,6 +164,49 @@ def extract_text_from_pdf(filepath):
     return text.strip()
 
 
+def call_groq_json(prompt, max_tokens=1500, temperature=0.0):
+    """Call Groq and parse the response as JSON. If the first response
+    isn't valid JSON, re-prompt once with an explicit correction before
+    giving up. LLMs occasionally add stray text or miss a brace even
+    when told to return only JSON — one retry clears most of these
+    without adding real latency in the common (already-valid) case."""
+
+    def _strip_fences(raw):
+        raw = raw.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        return raw.strip()
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+    raw = _strip_fences(response.choices[0].message.content)
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        logger.warning("First Groq response wasn't valid JSON. Retrying once with a correction.")
+        retry_prompt = (
+            prompt
+            + "\n\nYour previous response was not valid JSON. "
+              "Return ONLY the raw JSON object/array with no extra text, "
+              "no markdown fences, and no commentary."
+        )
+        retry_response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": retry_prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        raw_retry = _strip_fences(retry_response.choices[0].message.content)
+        return json.loads(raw_retry)  # let this raise if it still fails — caller handles it
+
+
 def analyze_resume(resume_text, job_description):
     prompt = f"""You are an expert ATS and career coach. Analyze the resume against the job description.
 
@@ -140,18 +226,7 @@ Return ONLY a valid JSON object with this exact structure:
   "improvements": ["improvement1", "improvement2", "improvement3"],
   "verdict": "<one of: Strong Match | Good Match | Partial Match | Weak Match>"
 }}"""
-
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    raw = response.choices[0].message.content.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-    return json.loads(raw.strip())
+    return call_groq_json(prompt, max_tokens=1500)
 
 
 # ── Custom error handlers ──
@@ -181,6 +256,31 @@ def internal_error(e):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/health')
+def health():
+    """Reports whether the app is actually configured correctly, not just
+    'the process is running'. Useful for uptime monitors and for debugging
+    a deploy without digging through logs."""
+    groq_configured = bool(os.environ.get("GROQ_API_KEY"))
+
+    redis_ok = False
+    if redis_client:
+        try:
+            redis_client.ping()
+            redis_ok = True
+        except Exception:
+            redis_ok = False
+
+    status = "ok" if groq_configured else "degraded"
+
+    return jsonify({
+        'status': status,
+        'groq_configured': groq_configured,
+        'cache_backend': CACHE_BACKEND,
+        'redis_reachable': redis_ok if CACHE_BACKEND == "redis" else None,
+    }), 200 if status == "ok" else 503
 
 
 @app.route('/analyze', methods=['POST'])
@@ -219,6 +319,13 @@ def analyze():
             finally:
                 os.remove(filepath)
 
+            if len(resume_text) < MIN_EXTRACTED_TEXT_LENGTH:
+                logger.warning(f"Scanned/low-text PDF detected: {filename}")
+                return jsonify({
+                    'error': 'This looks like a scanned PDF with no selectable text. '
+                              'Please paste your resume text directly instead.'
+                }), 400
+
     if not resume_text:
         resume_text = request.form.get('resume_text', '').strip()
 
@@ -241,7 +348,7 @@ def analyze():
         logger.info("Resume analysis completed successfully")
         return jsonify(result)
     except json.JSONDecodeError as e:
-        logger.error(f"JSON parse failure in /analyze: {e}", exc_info=True)
+        logger.error(f"JSON parse failure in /analyze (after retry): {e}", exc_info=True)
         return jsonify({'error': 'Failed to parse AI response. Please try again.'}), 500
     except Exception as e:
         logger.error(f"Error in /analyze: {e}", exc_info=True)
@@ -351,24 +458,13 @@ JOB DESCRIPTION:
 """
 
     try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=1200
-        )
-        raw = response.choices[0].message.content.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        questions = json.loads(raw.strip())
+        questions = call_groq_json(prompt, max_tokens=1200, temperature=0.7)
         result = {'questions': questions}
         cache_set(cache_key, result)
         logger.info("Interview prep questions generated successfully")
         return jsonify(result)
     except json.JSONDecodeError as e:
-        logger.error(f"JSON parse failure in /interview-prep: {e}", exc_info=True)
+        logger.error(f"JSON parse failure in /interview-prep (after retry): {e}", exc_info=True)
         return jsonify({'error': 'Failed to parse AI response. Please try again.'}), 500
     except Exception as e:
         logger.error(f"Error in /interview-prep: {e}", exc_info=True)
