@@ -86,7 +86,7 @@ MIN_EXTRACTED_TEXT_LENGTH = 50
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # ── In-memory fallback cache (only used when Redis is unavailable) ──
-_LOCAL_CACHE = {}
+CACHE = {}
 CACHE_TTL_SECONDS = 60 * 60  # 1 hour
 
 
@@ -102,12 +102,12 @@ def cache_get(key):
             logger.error(f"Redis GET failed, treating as cache miss: {e}")
             return None
 
-    entry = _LOCAL_CACHE.get(key)
+    entry = CACHE.get(key)
     if not entry:
         return None
     value, expires_at = entry
     if time.time() > expires_at:
-        _LOCAL_CACHE.pop(key, None)
+        CACHE.pop(key, None)
         return None
     logger.info(f"Cache hit (memory) for key {key[:10]}...")
     return value
@@ -122,7 +122,7 @@ def cache_set(key, value):
             logger.error(f"Redis SET failed, skipping cache write: {e}")
             return
 
-    _LOCAL_CACHE[key] = (value, time.time() + CACHE_TTL_SECONDS)
+    CACHE[key] = (value, time.time() + CACHE_TTL_SECONDS)
 
 
 def make_cache_key(*parts):
