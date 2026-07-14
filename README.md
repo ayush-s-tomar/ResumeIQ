@@ -64,6 +64,7 @@
 | 🔁 **LLM Retry on Malformed Output** | Automatically re-prompts once with a stricter format instruction if the AI's JSON response fails to parse |
 | 🩺 **Health Check Endpoint** | `/health` reports Groq configuration and cache backend status for uptime monitoring |
 | 🖼️ **Scanned-PDF Detection** | Flags PDFs with little to no extractable text (scanned images) with a specific, actionable error |
+| 🛡️ **Byte-Signature File Validation** | Verifies uploaded files are real PDFs by checking their actual file signature, not just the `.pdf` extension |
 
 ---
 
@@ -92,6 +93,7 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 - **Redis-backed cache & rate limiter, with automatic fallback.** The original version stored both in a plain Python dict / in-process memory, which silently breaks correctness the moment the app runs on more than one worker process — each worker gets its own cache (lower hit rate) and its own rate limit counter (the real limit becomes `10 × number_of_workers`, not 10). Setting a `REDIS_URL` environment variable now makes both shared and correct across processes. If Redis isn't configured or isn't reachable, the app logs a warning and falls back to in-memory storage so local development still works with zero setup.
 - **One automatic retry on malformed LLM JSON.** Asking an LLM to "return only JSON" doesn't guarantee it — an extra sentence or a missed brace used to fail the entire request. Now, if the first response doesn't parse, the app re-prompts once with an explicit "your previous response wasn't valid JSON" instruction before giving up. This meaningfully reduces failures without adding real latency in the common case (the retry only fires on the rare malformed response).
 - **Scanned-PDF detection.** A PDF that "extracts successfully" but yields almost no text is almost always a scanned image with no real text layer. Instead of surfacing a generic error, the app checks extracted length and tells the user specifically to paste text instead.
+- **Byte-signature validation over extension checks.** A file named `resume.pdf` isn't necessarily a PDF — renaming any file is trivial. The app reads the first bytes of the uploaded file and checks for the real PDF signature (`%PDF-`) before ever attempting to parse it.
 
 ---
 
@@ -99,7 +101,7 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 
 ```
 ResumeIQ/
-├── app.py                      # Flask backend — routes, caching, logging, validation, LLM retry
+├── app.py                      # Flask backend — routes, caching, logging, validation, LLM retry, health check
 ├── requirements.txt            # Production dependencies (pinned)
 ├── requirements-dev.txt        # Dev/test dependencies
 ├── Dockerfile                  # One-command container build
@@ -169,7 +171,7 @@ python app.py
 ```
 Open **http://localhost:5000**
 
-> No Redis running locally? Leave `REDIS_URL` unset — the app detects this and falls back to in-memory caching, logging a warning so you know it happened.
+> No Redis running locally? Leave `REDIS_URL` unset — the app detects this and falls back to in-memory caching, logging a warning so you know it happened. Check `/health` to confirm which backend is active.
 
 ---
 
@@ -222,8 +224,26 @@ pytest tests/ -v
 4. Set **Build Command**: `pip install -r requirements.txt`
 5. Set **Start Command**: `gunicorn app:app`
 6. Add environment variable: `GROQ_API_KEY` = your key
-7. *(Optional)* Add a free Render Redis instance and set `REDIS_URL` to enable shared caching/rate-limiting across workers
+7. *(Recommended)* Add a free Render Redis instance and set `REDIS_URL` to enable shared caching/rate-limiting across workers — otherwise each worker rate-limits and caches independently
 8. Deploy!
+9. Verify the deploy by visiting `/health` — confirm `groq_configured: true` and check which `cache_backend` is active
+
+---
+
+## 🩺 Health Check
+
+`GET /health` returns the app's actual runtime status, not just "process is alive":
+
+```json
+{
+  "status": "ok",
+  "groq_configured": true,
+  "cache_backend": "redis",
+  "redis_reachable": true
+}
+```
+
+Useful for uptime monitors, or for confirming a deploy is fully wired up without digging through logs.
 
 ---
 
@@ -263,7 +283,7 @@ pytest tests/ -v
 - Writing pytest suites with mocked external dependencies
 - Setting up GitHub Actions CI pipelines
 - Containerising a Python web app with Docker
-- Deploying to Render with environment variable management
+- Deploying to Render with environment variable management and a `/health` endpoint for verifying production config
 
 ---
 
