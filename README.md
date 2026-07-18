@@ -24,7 +24,7 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 <details>
 <summary>▶️ Watch the full walkthrough (upload → analyze → cover letter → interview prep → PDF export)</summary>
 
-![ResumeIQ Demo Walkthrough](assets/resumeiq_demo.gif)
+https://github.com/user-attachments/assets/82fed220-4e50-496a-8ab1-247a29330ea7
 
 </details>
 
