@@ -119,8 +119,11 @@ Nice to have:
 }
 
 # ─────────────────────────── Styling (matches Flask UI) ───────────────────────────
+st.markdown(
+    '<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">',
+    unsafe_allow_html=True,
+)
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #F5F2EE; --surface: #FFFFFF; --surface2: #FAFAF8;
