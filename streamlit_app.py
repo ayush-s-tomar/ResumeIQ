@@ -176,6 +176,28 @@ div.stButton > button {
   border-radius: 100px; font-weight:600; border:1px solid var(--border); background:white; color:var(--text);
 }
 div.stButton > button:hover { border-color:var(--accent); color:var(--accent);}
+
+/* Native widget theming — force light surfaces instead of Streamlit's dark defaults */
+[data-testid="stTextArea"] textarea {
+  background: var(--surface2) !important;
+  color: var(--text) !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+[data-testid="stFileUploaderDropzone"] {
+  background: var(--surface2) !important;
+  border: 2px dashed var(--border) !important;
+  border-radius: 12px !important;
+}
+[data-testid="stFileUploaderDropzone"] * { color: var(--text) !important; }
+[data-testid="stFileUploaderDropzoneInstructions"] svg { fill: var(--text-muted) !important; }
+[data-testid="stVerticalBlockBorderWrapper"] {
+  background: var(--surface);
+  border-radius: 16px !important;
+}
+div[data-baseweb="tab-list"] { background: var(--bg); border-radius: 10px; padding: 4px; }
+button[data-baseweb="tab"] { color: var(--text-muted); }
+button[data-baseweb="tab"][aria-selected="true"] { color: var(--accent); font-weight: 600; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -453,24 +475,24 @@ for i, (label, text) in enumerate(JD_TEMPLATES.items()):
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown('<div class="riq-card"><div class="riq-card-title"><span class="riq-num">1</span> Your Resume</div>', unsafe_allow_html=True)
-    tab_upload, tab_paste = st.tabs(["📄 Upload PDF", "✏️ Paste Text"])
-    uploaded_file = None
-    pasted_resume = ""
-    with tab_upload:
-        uploaded_file = st.file_uploader("Upload your resume (PDF, max 5MB)", type=["pdf"], label_visibility="collapsed")
-    with tab_paste:
-        pasted_resume = st.text_area("Paste your resume text here...", height=220, label_visibility="collapsed", key="resume_text_input")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="riq-card-title"><span class="riq-num">1</span> Your Resume</div>', unsafe_allow_html=True)
+        tab_upload, tab_paste = st.tabs(["📄 Upload PDF", "✏️ Paste Text"])
+        uploaded_file = None
+        pasted_resume = ""
+        with tab_upload:
+            uploaded_file = st.file_uploader("Upload your resume (PDF, max 5MB)", type=["pdf"], label_visibility="collapsed")
+        with tab_paste:
+            pasted_resume = st.text_area("Paste your resume text here...", height=220, label_visibility="collapsed", key="resume_text_input")
 
 with col2:
-    st.markdown('<div class="riq-card"><div class="riq-card-title"><span class="riq-num">2</span> Job Description</div>', unsafe_allow_html=True)
-    job_desc = st.text_area(
-        "Paste the job description here...",
-        height=270, label_visibility="collapsed", key="job_desc",
-    )
-    st.caption(f"{len(job_desc)} characters")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="riq-card-title"><span class="riq-num">2</span> Job Description</div>', unsafe_allow_html=True)
+        job_desc = st.text_area(
+            "Paste the job description here...",
+            height=270, label_visibility="collapsed", key="job_desc",
+        )
+        st.caption(f"{len(job_desc)} characters")
 
 # ─────────────────────────── Analyze ───────────────────────────
 _, mid, _ = st.columns([1, 1, 1])
@@ -563,25 +585,20 @@ if data:
 
     r1, r2 = st.columns(2)
     with r1:
-        st.markdown('<div class="riq-card"><div class="result-title">🟢 Matched Keywords</div>', unsafe_allow_html=True)
-        st.markdown("".join(f'<span class="tag-matched">{k}</span>' for k in data["matched_keywords"]), unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        tags_html = "".join(f'<span class="tag-matched">{k}</span>' for k in data["matched_keywords"])
+        st.markdown(f'<div class="riq-card"><div class="result-title">🟢 Matched Keywords</div>{tags_html}</div>', unsafe_allow_html=True)
     with r2:
-        st.markdown('<div class="riq-card"><div class="result-title">🟠 Missing Keywords</div>', unsafe_allow_html=True)
-        st.markdown("".join(f'<span class="tag-missing">{k}</span>' for k in data["missing_keywords"]), unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        tags_html = "".join(f'<span class="tag-missing">{k}</span>' for k in data["missing_keywords"])
+        st.markdown(f'<div class="riq-card"><div class="result-title">🟠 Missing Keywords</div>{tags_html}</div>', unsafe_allow_html=True)
 
     r3, r4 = st.columns(2)
     with r3:
-        st.markdown('<div class="riq-card"><div class="result-title">💪 Strengths</div>', unsafe_allow_html=True)
-        for s in data["strengths"]:
-            st.markdown(f'<div class="riq-list-item dot-green">{s}</div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        items_html = "".join(f'<div class="riq-list-item dot-green">{s}</div>' for s in data["strengths"])
+        st.markdown(f'<div class="riq-card"><div class="result-title">💪 Strengths</div>{items_html}</div>', unsafe_allow_html=True)
     with r4:
-        st.markdown('<div class="riq-card"><div class="result-title">📈 Areas to Improve</div>', unsafe_allow_html=True)
-        for s in data["improvements"]:
-            st.markdown(f'<div class="riq-list-item dot-warn">{s}</div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        items_html = "".join(f'<div class="riq-list-item dot-warn">{s}</div>' for s in data["improvements"])
+        st.markdown(f'<div class="riq-card"><div class="result-title">📈 Areas to Improve</div>{items_html}</div>', unsafe_allow_html=True)
+
 
     # ── Actions ──
     a1, a2, a3 = st.columns(3)
