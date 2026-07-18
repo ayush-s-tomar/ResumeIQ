@@ -373,6 +373,21 @@ def verdict_class(v):
     return "verdict-weak", "🔴"
 
 
+def _pdf_safe(text):
+    """Core PDF fonts (Helvetica) only support latin-1. Groq's output often
+    includes em-dashes, smart quotes, or other unicode punctuation that would
+    otherwise crash the export — replace with safe ASCII equivalents."""
+    if not isinstance(text, str):
+        text = str(text)
+    replacements = {
+        "\u2014": "-", "\u2013": "-", "\u2018": "'", "\u2019": "'",
+        "\u201c": '"', "\u201d": '"', "\u2026": "...", "\u2022": "-",
+    }
+    for bad, good in replacements.items():
+        text = text.replace(bad, good)
+    return text.encode("latin-1", "ignore").decode("latin-1")
+
+
 def build_analysis_pdf(data, job_desc_snippet):
     from fpdf import FPDF
 
@@ -392,27 +407,32 @@ def build_analysis_pdf(data, job_desc_snippet):
     pdf.set_y(36)
     pdf.set_text_color(26, 23, 20)
     pdf.set_font("Helvetica", "B", 22)
-    pdf.cell(0, 10, f"Score: {data['match_score']} / 100", ln=1)
+    pdf.cell(0, 10, _pdf_safe(f"Score: {data['match_score']} / 100"), ln=1)
     pdf.set_font("Helvetica", "B", 12)
-    pdf.cell(0, 8, data["verdict"], ln=1)
+    pdf.cell(0, 8, _pdf_safe(data["verdict"]), ln=1)
     pdf.set_font("Helvetica", "", 11)
-    pdf.multi_cell(0, 6, data["summary"])
+    pdf.multi_cell(0, 6, _pdf_safe(data["summary"]))
+    pdf.set_x(pdf.l_margin)
     pdf.ln(4)
 
     def section(title, items):
+        pdf.set_x(pdf.l_margin)
         pdf.set_font("Helvetica", "B", 10)
         pdf.set_text_color(138, 129, 120)
-        pdf.cell(0, 8, title.upper(), ln=1)
+        pdf.cell(0, 8, _pdf_safe(title.upper()), ln=1)
         pdf.set_font("Helvetica", "", 10)
         pdf.set_text_color(40, 40, 40)
         for item in items:
-            pdf.multi_cell(0, 6, f"- {item}")
+            pdf.set_x(pdf.l_margin)
+            pdf.multi_cell(0, 6, _pdf_safe(f"- {item}"))
+        pdf.set_x(pdf.l_margin)
         pdf.ln(2)
 
     section("Matched Keywords", data.get("matched_keywords", []))
     section("Missing Keywords", data.get("missing_keywords", []))
     section("Strengths", data.get("strengths", []))
     section("Areas to Improve", data.get("improvements", []))
+
 
     return bytes(pdf.output(dest="S"))
 
@@ -436,7 +456,8 @@ def build_cover_letter_pdf(letter_text):
     pdf.set_font("Helvetica", "", 11)
     pdf.set_text_color(40, 40, 40)
     for para in letter_text.split("\n\n"):
-        pdf.multi_cell(0, 6, para.strip())
+        pdf.set_x(pdf.l_margin)
+        pdf.multi_cell(0, 6, _pdf_safe(para.strip()))
         pdf.ln(3)
     return bytes(pdf.output(dest="S"))
 
@@ -555,7 +576,7 @@ if analyze_clicked:
                 "summary": data["summary"], "jd_snippet": jd[:80],
                 "matched": data["matched_keywords"], "missing": data["missing_keywords"],
                 "strengths": data["strengths"], "improvements": data["improvements"],
-                "time": datetime.now().strftime("%d %b, %I:%M %p"),
+                "time": datetime.now().strftime("%d %b, %I:%M %p").replace(", 0", ", "),
             }
             st.session_state["history"] = ([entry] + st.session_state["history"])[:5]
 
