@@ -137,15 +137,19 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 #MainMenu, footer, header {visibility: hidden;}
 
 /* Constrain and center content like the original Flask 1100px container */
+[data-testid="stAppViewContainer"], [data-testid="stMain"], .main {
+  background: var(--bg) !important;
+}
 .block-container {
   max-width: 1100px !important;
   margin: 0 auto !important;
   padding-top: 2rem !important;
   padding-left: 2rem !important;
   padding-right: 2rem !important;
+  background: transparent !important;
 }
 
-.riq-header { display:flex; align-items:center; justify-content:space-between; padding: 4px 0 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 8px;}
+.riq-header { display:flex; align-items:center; justify-content:space-between; padding: 4px 8px 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 8px;}
 .riq-logo { font-family:'DM Serif Display', serif; font-size:26px; color:var(--text); }
 .riq-logo .dot { display:inline-block; width:9px; height:9px; background:var(--accent); border-radius:50%; margin-right:8px;}
 .riq-badge { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); background:var(--accent-light); padding:5px 12px; border-radius:20px; }
