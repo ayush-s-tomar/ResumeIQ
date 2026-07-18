@@ -136,6 +136,15 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 .stApp { background: var(--bg); }
 #MainMenu, footer, header {visibility: hidden;}
 
+/* Constrain and center content like the original Flask 1100px container */
+.block-container {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  padding-top: 2rem !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
 .riq-header { display:flex; align-items:center; justify-content:space-between; padding: 4px 0 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 8px;}
 .riq-logo { font-family:'DM Serif Display', serif; font-size:26px; color:var(--text); }
 .riq-logo .dot { display:inline-block; width:9px; height:9px; background:var(--accent); border-radius:50%; margin-right:8px;}
@@ -629,8 +638,10 @@ if data:
         a1.download_button("📄 Export Analysis PDF", data=pdf_bytes,
                             file_name="ResumeIQ_Analysis.pdf", mime="application/pdf",
                             use_container_width=True)
-    except Exception:
+    except Exception as e:
         a1.button("📄 Export PDF (unavailable)", disabled=True, use_container_width=True)
+        with st.expander("⚠️ PDF export error details (debug)"):
+            st.exception(e)
 
     if a2.button("✉️ Generate Cover Letter", use_container_width=True):
         with st.spinner("Generating your cover letter..."):
