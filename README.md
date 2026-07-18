@@ -17,7 +17,7 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 
 ## 📸 Demo Preview
 
-![ResumeIQ Results View](assets/Resume%20Screener%20Demo.png)
+<img width="1580" height="1100" alt="ResumeIQ Results View" src="https://github.com/user-attachments/assets/3c1c7a13-e3cc-485a-a3e1-fc4c1f945e6e" />
 
 **Upload → Match → Improve → Apply** with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.
 
