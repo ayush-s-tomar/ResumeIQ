@@ -597,20 +597,23 @@ if analyze_clicked:
 data = st.session_state["results"]
 if data:
     v_class, v_emoji = verdict_class(data["verdict"])
+    score = data['match_score']
+    ring_color = "#52B788" if score >= 70 else ("#E9B872" if score >= 45 else "#E07856")
     st.markdown(f"""
     <div class="score-card">
       <div style="display:flex; align-items:center; gap:36px;">
-        <div style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.1);
-                    border:3px solid rgba(255,255,255,0.2);display:flex;flex-direction:column;
+        <div style="width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.08);
+                    border:3px solid {ring_color};box-shadow:0 0 0 4px rgba(255,255,255,0.06), 0 4px 18px rgba(0,0,0,0.35);
+                    display:flex;flex-direction:column;
                     align-items:center;justify-content:center;flex-shrink:0;">
-          <div class="score-num">{data['match_score']}</div>
+          <div class="score-num">{score}</div>
           <div class="score-label">Score</div>
         </div>
         <div style="flex:1;">
           <div class="verdict-pill {v_class}">{v_emoji} {data['verdict']}</div>
           <div style="font-size:15px;opacity:.85;font-weight:300;line-height:1.6;">{data['summary']}</div>
           <div style="margin-top:14px;height:6px;background:rgba(255,255,255,0.15);border-radius:3px;overflow:hidden;">
-            <div style="height:100%;width:{data['match_score']}%;background:#52B788;border-radius:3px;"></div>
+            <div style="height:100%;width:{score}%;background:#52B788;border-radius:3px;"></div>
           </div>
         </div>
       </div>
