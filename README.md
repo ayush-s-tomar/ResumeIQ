@@ -1,31 +1,32 @@
 # ResumeIQ — AI-Powered Resume Screener
 
-> Match your resume to any job description in seconds. Get an AI-powered ATS score, keyword breakdown, strengths analysis, cover letter, and interview prep — all in one tool.
+Match your resume to any job description in seconds. Get an AI-powered ATS score, keyword breakdown, strengths analysis, cover letter, and interview prep — all in one tool.
 
 [![CI](https://github.com/ayush-s-tomar/ResumeIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/ayush-s-tomar/ResumeIQ/actions/workflows/ci.yml)
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://resumeiq-55h8.onrender.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.0-black?logo=flask)](https://flask.palletsprojects.com)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](./Dockerfile)
-
----
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://resume-iq-screener.streamlit.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/flask-3.0-black.svg)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker&logoColor=white)](Dockerfile)
 
 ## 🌐 Live Demo
 
-👉 **[resumeiq-55h8.onrender.com](https://resumeiq-55h8.onrender.com)**
+👉 **[ResumeIQ — AI Resume Screener · Streamlit](https://resume-iq-screener.streamlit.app/)**
 
-> ⚡ Hosted on Render's free tier — may take 15–20 seconds to wake up on first visit.
-
----
+⚡ Hosted on Streamlit Community Cloud — may take a few seconds to wake up on first visit.
 
 ## 📸 Demo Preview
 
-![ResumeIQ Results View](./assets/Resume_Screener_Demo.png)
+![ResumeIQ Results View](assets/Resume%20Screener%20Demo.png)
 
-*Upload → Match → Improve → Apply with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.*
+**Upload → Match → Improve → Apply** with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.
 
----
+<details>
+<summary>▶️ Watch the full walkthrough (upload → analyze → cover letter → interview prep → PDF export)</summary>
+
+![ResumeIQ Demo Walkthrough](assets/resumeiq_demo.gif)
+
+</details>
 
 ## 📑 Table of Contents
 
@@ -37,54 +38,49 @@
 - [Docker](#-docker)
 - [Running Tests](#-running-tests)
 - [How to Use](#-how-to-use)
-- [Deployment](#️-deployment-free-on-render)
+- [Deployment](#️-deployment-free-on-streamlit-community-cloud)
+- [Health Check](#-health-check)
 - [Roadmap](#-roadmap)
 - [What I Learned](#-what-i-learned)
 - [Contributing](#-contributing)
 - [License](#-license)
 
----
-
 ## ✨ Features
 
 | Feature | Description |
 |---|---|
-| 🎯 **ATS Match Score** | 0–100 compatibility score against any job description |
-| 🔍 **Keyword Analysis** | See exactly which keywords match and which are missing |
-| 💪 **Strengths** | Understand what makes your resume stand out for this role |
-| 📈 **Improvements** | Get specific, actionable suggestions to close skill gaps |
-| ✉️ **Cover Letter Generator** | AI-written, personalized cover letter in one click |
-| 🎤 **Interview Prep** | 5 role-specific interview questions with answering tips |
-| 📄 **PDF Export** | Download your full analysis or cover letter as a PDF |
-| 📋 **Job Templates** | Quick-fill JD templates for Python Dev, AI/ML, Data Analyst, Full Stack |
-| 🌙 **Dark Mode** | Light/dark toggle, persisted across sessions |
-| 🕐 **Score History** | Last 5 analyses saved locally for quick comparison |
-| 🔒 **Rate Limiting** | 10 requests/hour per user, shared across workers via Redis |
-| ⚡ **Response Caching** | Repeated resume+JD pairs served instantly, no extra API cost |
-| 🔁 **LLM Retry on Malformed Output** | Automatically re-prompts once with a stricter format instruction if the AI's JSON response fails to parse |
-| 🩺 **Health Check Endpoint** | `/health` reports Groq configuration and cache backend status for uptime monitoring |
-| 🖼️ **Scanned-PDF Detection** | Flags PDFs with little to no extractable text (scanned images) with a specific, actionable error |
-| 🛡️ **Byte-Signature File Validation** | Verifies uploaded files are real PDFs by checking their actual file signature, not just the `.pdf` extension |
-
----
+| 🎯 ATS Match Score | 0–100 compatibility score against any job description |
+| 🔍 Keyword Analysis | See exactly which keywords match and which are missing |
+| 💪 Strengths | Understand what makes your resume stand out for this role |
+| 📈 Improvements | Get specific, actionable suggestions to close skill gaps |
+| ✉️ Cover Letter Generator | AI-written, personalized cover letter in one click |
+| 🎤 Interview Prep | 5 role-specific interview questions with answering tips |
+| 📄 PDF Export | Download your full analysis or cover letter as a PDF |
+| 📋 Job Templates | Quick-fill JD templates for Python Dev, AI/ML, Data Analyst, Full Stack |
+| 🌙 Dark Mode | Light/dark toggle, persisted across sessions |
+| 🕐 Score History | Last 5 analyses saved locally for quick comparison |
+| 🔒 Rate Limiting | 10 requests/hour per user, shared across workers via Redis |
+| ⚡ Response Caching | Repeated resume+JD pairs served instantly, no extra API cost |
+| 🔁 LLM Retry on Malformed Output | Automatically re-prompts once with a stricter format instruction if the AI's JSON response fails to parse |
+| 🩺 Health Check Endpoint | `/health` reports Groq configuration and cache backend status for uptime monitoring |
+| 🖼️ Scanned-PDF Detection | Flags PDFs with little to no extractable text (scanned images) with a specific, actionable error |
+| 🛡️ Byte-Signature File Validation | Verifies uploaded files are real PDFs by checking their actual file signature, not just the `.pdf` extension |
 
 ## 🛠 Tech Stack
 
 | Layer | Tech |
-|-------|------|
+|---|---|
 | Backend | Python 3.11, Flask 3.0 |
 | AI | Groq API (LLaMA 3.3 70B) |
 | PDF Parsing | pdfplumber |
 | Frontend | HTML5, CSS3, Vanilla JS |
 | PDF Export | jsPDF (client-side) |
 | Rate Limiting / Cache | Flask-Limiter + Redis (falls back to in-memory if `REDIS_URL` isn't set) |
-| Logging | Python `logging` + RotatingFileHandler, with per-request latency logging |
+| Logging | Python logging + RotatingFileHandler, with per-request latency logging |
 | Testing | pytest (18+ tests, Groq calls mocked) |
 | CI/CD | GitHub Actions |
 | Containerisation | Docker |
-| Hosting | Render |
-
----
+| Hosting | Streamlit Community Cloud |
 
 ## 🏗 Architecture Notes
 
@@ -94,8 +90,6 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 - **One automatic retry on malformed LLM JSON.** Asking an LLM to "return only JSON" doesn't guarantee it — an extra sentence or a missed brace used to fail the entire request. Now, if the first response doesn't parse, the app re-prompts once with an explicit "your previous response wasn't valid JSON" instruction before giving up. This meaningfully reduces failures without adding real latency in the common case (the retry only fires on the rare malformed response).
 - **Scanned-PDF detection.** A PDF that "extracts successfully" but yields almost no text is almost always a scanned image with no real text layer. Instead of surfacing a generic error, the app checks extracted length and tells the user specifically to paste text instead.
 - **Byte-signature validation over extension checks.** A file named `resume.pdf` isn't necessarily a PDF — renaming any file is trivial. The app reads the first bytes of the uploaded file and checks for the real PDF signature (`%PDF-`) before ever attempting to parse it.
-
----
 
 ## 📁 Project Structure
 
@@ -125,17 +119,17 @@ ResumeIQ/
         └── ci.yml              # Runs tests + Docker build on every push
 ```
 
----
-
 ## 🚀 Setup & Installation
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/ayush-s-tomar/ResumeIQ.git
 cd ResumeIQ
 ```
 
 ### 2. Create a virtual environment
+
 ```bash
 python -m venv venv
 
@@ -147,16 +141,21 @@ source venv/bin/activate
 ```
 
 ### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Set up your API key
+
 Get a free API key from [console.groq.com](https://console.groq.com), then:
+
 ```bash
 cp .env.example .env
 ```
+
 Edit `.env`:
+
 ```
 GROQ_API_KEY=your_groq_key_here
 
@@ -166,14 +165,14 @@ REDIS_URL=redis://localhost:6379/0
 ```
 
 ### 5. Run the app
+
 ```bash
 python app.py
 ```
-Open **http://localhost:5000**
+
+Open [http://localhost:5000](http://localhost:5000)
 
 > No Redis running locally? Leave `REDIS_URL` unset — the app detects this and falls back to in-memory caching, logging a warning so you know it happened. Check `/health` to confirm which backend is active.
-
----
 
 ## 🐳 Docker
 
@@ -187,9 +186,7 @@ docker build -t resumeiq .
 docker run -p 5000:5000 --env-file .env resumeiq
 ```
 
-Open **http://localhost:5000**
-
----
+Open [http://localhost:5000](http://localhost:5000)
 
 ## 🧪 Running Tests
 
@@ -203,32 +200,24 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
----
-
 ## 📖 How to Use
 
-1. Upload your resume as a PDF **or** paste the text directly
+1. Upload your resume as a PDF or paste the text directly
 2. Paste any job description (or pick a quick template)
 3. Click **✦ Analyze Match**
 4. Review your score, matched/missing keywords, strengths, and improvements
-5. Generate a **Cover Letter** or **Interview Prep questions** in one click
-6. Export the full analysis as a **PDF**
+5. Generate a **Cover Letter** or **Interview Prep** questions in one click
+6. Export the full analysis as a PDF
 
----
-
-## ☁️ Deployment (Free on Render)
+## ☁️ Deployment (Free on Streamlit Community Cloud)
 
 1. Push this repo to GitHub
-2. Go to [render.com](https://render.com) → New → Web Service
-3. Connect your GitHub repo
-4. Set **Build Command**: `pip install -r requirements.txt`
-5. Set **Start Command**: `gunicorn app:app`
-6. Add environment variable: `GROQ_API_KEY` = your key
-7. *(Recommended)* Add a free Render Redis instance and set `REDIS_URL` to enable shared caching/rate-limiting across workers — otherwise each worker rate-limits and caches independently
-8. Deploy!
-9. Verify the deploy by visiting `/health` — confirm `groq_configured: true` and check which `cache_backend` is active
+2. Go to [share.streamlit.io](https://share.streamlit.io) → New app
+3. Connect your GitHub repo, branch `main`, and set the main file path to `streamlit_app.py`
+4. Add `GROQ_API_KEY` under App settings → Secrets
+5. Deploy!
 
----
+> The Flask version (`app.py`) also ships with a `Dockerfile` and can be deployed anywhere that runs containers (Render, Railway, Fly.io) if you'd rather use the REST API directly instead of the Streamlit UI.
 
 ## 🩺 Health Check
 
@@ -244,8 +233,6 @@ pytest tests/ -v
 ```
 
 Useful for uptime monitors, or for confirming a deploy is fully wired up without digging through logs.
-
----
 
 ## 🗺 Roadmap
 
@@ -268,8 +255,6 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - [ ] Resume rewrite suggestions (AI-powered)
 - [ ] Eval set: measure AI score accuracy against human-judged resume/JD pairs
 
----
-
 ## 🧠 What I Learned
 
 - Building and structuring REST APIs with Flask
@@ -283,9 +268,7 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - Writing pytest suites with mocked external dependencies
 - Setting up GitHub Actions CI pipelines
 - Containerising a Python web app with Docker
-- Deploying to Render with environment variable management and a `/health` endpoint for verifying production config
-
----
+- Deploying to Streamlit Community Cloud and containerized alternatives (Render, Docker) with environment variable / secrets management and a `/health` endpoint for verifying production config
 
 ## 🤝 Contributing
 
@@ -297,16 +280,12 @@ Contributions, issues, and feature requests are welcome!
 4. Push to the branch: `git push origin feature/your-feature`
 5. Open a Pull Request
 
----
-
 ## 📄 License
 
-This project is licensed under the [MIT License](./LICENSE).
-
----
+This project is licensed under the [MIT License](LICENSE).
 
 ## 👤 Author
 
-Built by **[Ayush Singh Tomar](https://github.com/ayush-s-tomar)**
+Built by [Ayush Singh Tomar](https://github.com/ayush-s-tomar)
 
 If this project helped you or you found it interesting, consider giving it a ⭐ on GitHub — it genuinely helps!
