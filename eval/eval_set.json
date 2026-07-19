@@ -1,0 +1,23 @@
+[
+  {
+    "id": "case_01",
+    "resume_excerpt": "Backend Engineer with 3 years of experience building REST APIs in Python (Flask, FastAPI) and Node.js. Designed and deployed microservices handling 2M+ requests/day. Strong experience with PostgreSQL, Redis caching, and Docker. Led migration of a monolithic service to containerized microservices, reducing average response latency by 40%. Familiar with CI/CD pipelines using GitHub Actions.",
+    "job_description": "We are hiring a Backend Engineer to build and maintain scalable REST APIs. Requirements: 2+ years experience with Python (Flask or FastAPI), experience with relational databases (PostgreSQL preferred), familiarity with Docker and containerized deployments, understanding of caching strategies. Bonus: CI/CD experience.",
+    "human_score": 90,
+    "human_notes": "Near-perfect match - every required skill present, plus the CI/CD bonus."
+  },
+  {
+    "id": "case_02",
+    "resume_excerpt": "Frontend Developer with 4 years of experience in React, TypeScript, and Tailwind CSS. Built responsive dashboards and design systems used by 50k+ monthly users. Experience with Figma-to-code workflows and component library maintenance. Some exposure to Node.js for simple backend scripts, but primarily frontend-focused.",
+    "job_description": "Seeking a Backend Engineer to design and scale our core API services. Must have strong experience with Python, distributed systems, and database design (PostgreSQL or MongoDB). Experience with Kubernetes is a plus. This is a backend-only role - no frontend work required.",
+    "human_score": 20,
+    "human_notes": "Low overlap by design - candidate has essentially no backend depth, role explicitly excludes frontend."
+  },
+  {
+    "id": "case_03",
+    "resume_excerpt": "Data Analyst with 2 years of experience using SQL, Python (pandas, matplotlib), and Tableau for business reporting. Built automated weekly reporting pipelines reducing manual reporting time by 10 hours/week. Some experience with A/B testing analysis and basic statistics, but no formal machine learning or ML model deployment experience.",
+    "job_description": "Looking for a Machine Learning Engineer to build and deploy predictive models in production. Requirements: strong Python skills, experience with scikit-learn or PyTorch, understanding of model deployment (Docker, REST APIs), and experience with feature engineering. SQL is a plus but not core to the role.",
+    "human_score": 45,
+    "human_notes": "Partial match - Python/SQL transfer, but no ML framework or deployment experience. Plausible stretch candidate."
+  }
+]
