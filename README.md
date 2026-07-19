@@ -9,6 +9,8 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 [![Flask](https://img.shields.io/badge/flask-3.0-black.svg)](https://flask.palletsprojects.com/)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg?logo=docker&logoColor=white)](Dockerfile)
 
+> **Why this one's worth a look:** built to fix a real scalability bug — in-memory rate limiting and caching silently break once you run more than one worker process. See [Architecture Notes](#-architecture-notes) for the fix, or jump straight to the [Live Demo](#-live-demo).
+
 ## 🌐 Live Demo
 
 👉 **[ResumeIQ — AI Resume Screener · Streamlit](https://resume-iq-screener.streamlit.app/)**
@@ -17,6 +19,7 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 
 ## 📸 Demo Preview
 
+<!-- TODO: replace with GIF once recorded (see instructions below) -->
 <img width="1580" height="1100" alt="ResumeIQ Results View" src="https://github.com/user-attachments/assets/3c1c7a13-e3cc-485a-a3e1-fc4c1f945e6e" />
 
 **Upload → Match → Improve → Apply** with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.
@@ -33,6 +36,7 @@ https://github.com/user-attachments/assets/82fed220-4e50-496a-8ab1-247a29330ea7
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Architecture Notes](#-architecture-notes)
+- [Evaluation](#-evaluation)
 - [Project Structure](#-project-structure)
 - [Setup & Installation](#-setup--installation)
 - [Docker](#-docker)
@@ -91,6 +95,20 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 - **Scanned-PDF detection.** A PDF that "extracts successfully" but yields almost no text is almost always a scanned image with no real text layer. Instead of surfacing a generic error, the app checks extracted length and tells the user specifically to paste text instead.
 - **Byte-signature validation over extension checks.** A file named `resume.pdf` isn't necessarily a PDF — renaming any file is trivial. The app reads the first bytes of the uploaded file and checks for the real PDF signature (`%PDF-`) before ever attempting to parse it.
 
+## 📊 Evaluation
+
+<!-- TODO: run eval/run_eval.py, then fill in real numbers below -->
+
+ATS match scoring accuracy was measured against a hand-labeled set of resume/job-description pairs:
+
+| Metric | Value |
+|---|---|
+| Eval set size | 15 hand-labeled resume/JD pairs |
+| Mean absolute error | *TODO — run `eval/run_eval.py` and paste result* |
+| Scoring method | AI score (0–100) vs. human-judged score (0–100) |
+
+See [`eval/run_eval.py`](eval/run_eval.py) and [`eval/eval_set.json`](eval/eval_set.json) for methodology.
+
 ## 📁 Project Structure
 
 ```
@@ -105,6 +123,9 @@ ResumeIQ/
 ├── LICENSE
 ├── assets/
 │   └── Resume_Screener_Demo.png
+├── eval/
+│   ├── eval_set.json           # Hand-labeled resume/JD pairs with human scores
+│   └── run_eval.py             # Measures AI score accuracy vs. human judgment
 ├── templates/
 │   └── index.html              # Main UI — dark mode, skeleton loader, modals
 ├── static/
@@ -249,11 +270,11 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - [x] Automatic retry on malformed LLM JSON output
 - [x] `/health` endpoint for uptime monitoring
 - [x] Scanned-PDF (no text layer) detection
+- [ ] Eval harness measuring ATS score accuracy against human-judged pairs
 - [ ] Server-side score history (currently client-side only, no auth system yet)
 - [ ] DOCX resume upload support
 - [ ] Multi-resume comparison mode
 - [ ] Resume rewrite suggestions (AI-powered)
-- [ ] Eval set: measure AI score accuracy against human-judged resume/JD pairs
 
 ## 🧠 What I Learned
 
