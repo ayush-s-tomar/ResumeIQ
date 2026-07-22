@@ -19,15 +19,16 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 
 ## 📸 Demo Preview
 
-<!-- TODO: replace with GIF once recorded (see instructions below) -->
 <img width="1580" height="1100" alt="ResumeIQ Results View" src="https://github.com/user-attachments/assets/3c1c7a13-e3cc-485a-a3e1-fc4c1f945e6e" />
 
 **Upload → Match → Improve → Apply** with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.
 
+![ResumeIQ Demo](assets/Resume_Screener_Demo.gif)
+
 <details>
 <summary>▶️ Watch the full walkthrough (upload → analyze → cover letter → interview prep → PDF export)</summary>
 
-https://github.com/user-attachments/assets/82fed220-4e50-496a-8ab1-247a29330ea7
+https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 
 </details>
 
@@ -97,8 +98,6 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 
 ## 📊 Evaluation
 
-<!-- TODO: run eval/run_eval.py, then fill in real numbers below -->
-
 ATS match scoring accuracy was measured against a hand-labeled set of resume/job-description pairs:
 
 | Metric | Value |
@@ -122,7 +121,8 @@ ResumeIQ/
 ├── .gitignore
 ├── LICENSE
 ├── assets/
-│   └── Resume_Screener_Demo.png
+│   ├── Resume_Screener_Demo.png
+│   └── Resume_Screener_Demo.gif
 ├── eval/
 │   ├── eval_set.json           # Hand-labeled resume/JD pairs with human scores
 │   └── run_eval.py             # Measures AI score accuracy vs. human judgment
