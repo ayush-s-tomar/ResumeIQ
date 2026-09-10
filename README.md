@@ -15,19 +15,23 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 - 🔁 **Handles LLM non-determinism** — a malformed JSON response triggers one automatic re-prompt with a stricter format instruction before failing.
 - 🛡️ **Validates files by content, not extension** — checks the actual PDF byte signature, since renaming any file to `.pdf` is trivial.
 
+---
+
 ## 🌐 Live Demo
 
-👉 **[ResumeIQ — AI Resume Screener · Streamlit](https://resume-iq-screener.streamlit.app/)**
+👉 **[ResumeIQ — AI Resume Screener](https://resume-iq-screener.streamlit.app/)**
 
 ⚡ Hosted on Streamlit Community Cloud — may take a few seconds to wake up on first visit.
 
+---
+
 ## 📸 Demo Preview
 
-<img width="1580" height="1100" alt="ResumeIQ Results View" src="https://github.com/user-attachments/assets/3c1c7a13-e3cc-485a-a3e1-fc4c1f945e6e" />
+<img width="1580" height="1100" alt="ResumeIQ results view showing ATS match score, keyword breakdown, and improvement suggestions" src="https://github.com/user-attachments/assets/3c1c7a13-e3cc-485a-a3e1-fc4c1f945e6e" />
 
 **Upload → Match → Improve → Apply** with confidence. Paste any job description and get an instant ATS score, keyword breakdown, and clear next steps to close the gap — no guessing what the numbers mean.
 
-![ResumeIQ Demo](assets/Resume_Screener_Demo.gif)
+![ResumeIQ walkthrough — upload, analyze, and export flow](assets/Resume_Screener_Demo.gif)
 
 <details>
 <summary>▶️ Watch the full walkthrough (upload → analyze → cover letter → interview prep → PDF export)</summary>
@@ -35,6 +39,8 @@ Match your resume to any job description in seconds. Get an AI-powered ATS score
 https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 
 </details>
+
+---
 
 ## 📑 Table of Contents
 
@@ -47,12 +53,14 @@ https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 - [Docker](#-docker)
 - [Running Tests](#-running-tests)
 - [How to Use](#-how-to-use)
-- [Deployment](#️-deployment-free-on-streamlit-community-cloud)
+- [Deployment](#️-deployment)
 - [Health Check](#-health-check)
 - [Roadmap](#-roadmap)
 - [What I Learned](#-what-i-learned)
 - [Contributing](#-contributing)
 - [License](#-license)
+
+---
 
 ## ✨ Features
 
@@ -75,6 +83,8 @@ https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 | 🖼️ Scanned-PDF Detection | Flags PDFs with little to no extractable text (scanned images) with a specific, actionable error |
 | 🛡️ Byte-Signature File Validation | Verifies uploaded files are real PDFs by checking their actual file signature, not just the `.pdf` extension |
 
+---
+
 ## 🛠 Tech Stack
 
 | Layer | Tech |
@@ -91,6 +101,8 @@ https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 | Containerisation | Docker |
 | Hosting | Streamlit Community Cloud |
 
+---
+
 ## 🏗 Architecture Notes
 
 A couple of decisions worth calling out, since they came out of deliberately fixing earlier gaps rather than defaults:
@@ -99,6 +111,8 @@ A couple of decisions worth calling out, since they came out of deliberately fix
 - **One automatic retry on malformed LLM JSON.** Asking an LLM to "return only JSON" doesn't guarantee it — an extra sentence or a missed brace used to fail the entire request. Now, if the first response doesn't parse, the app re-prompts once with an explicit "your previous response wasn't valid JSON" instruction before giving up. This meaningfully reduces failures without adding real latency in the common case (the retry only fires on the rare malformed response).
 - **Scanned-PDF detection.** A PDF that "extracts successfully" but yields almost no text is almost always a scanned image with no real text layer. Instead of surfacing a generic error, the app checks extracted length and tells the user specifically to paste text instead.
 - **Byte-signature validation over extension checks.** A file named `resume.pdf` isn't necessarily a PDF — renaming any file is trivial. The app reads the first bytes of the uploaded file and checks for the real PDF signature (`%PDF-`) before ever attempting to parse it.
+
+---
 
 ## 📊 Evaluation
 
@@ -112,14 +126,17 @@ ATS match scoring accuracy was measured against a hand-labeled set of resume/job
 
 See [`eval/run_eval.py`](eval/run_eval.py) and [`eval/eval_set.json`](eval/eval_set.json) for methodology.
 
+---
+
 ## 📁 Project Structure
 
 ```
 ResumeIQ/
 ├── app.py                      # Flask backend — routes, caching, logging, validation, LLM retry, health check
+├── streamlit_app.py            # Streamlit wrapper used for the hosted live demo
 ├── requirements.txt            # Production dependencies (pinned)
 ├── requirements-dev.txt        # Dev/test dependencies
-├── Dockerfile                  # One-command container build
+├── Dockerfile                  # One-command container build for the Flask app
 ├── .dockerignore
 ├── .env.example                # Environment variable template
 ├── .gitignore
@@ -144,7 +161,7 @@ ResumeIQ/
         └── ci.yml              # Runs tests + Docker build on every push
 ```
 
-> ⚠️ **Note:** the Deployment section below references `streamlit_app.py`, which isn't listed in this file tree. This is worth reconciling — either that file exists and the tree above is missing it, or the deployment instructions need updating to match how the live demo is actually hosted.
+---
 
 ## 🚀 Setup & Installation
 
@@ -201,6 +218,8 @@ Open [http://localhost:5000](http://localhost:5000)
 
 > No Redis running locally? Leave `REDIS_URL` unset — the app detects this and falls back to in-memory caching, logging a warning so you know it happened. Check `/health` to confirm which backend is active.
 
+---
+
 ## 🐳 Docker
 
 Run the entire app in one command — no Python or virtualenv setup needed:
@@ -215,6 +234,8 @@ docker run -p 5000:5000 --env-file .env resumeiq
 
 Open [http://localhost:5000](http://localhost:5000)
 
+---
+
 ## 🧪 Running Tests
 
 The test suite covers all routes, input validation, PDF checking, caching logic, the LLM retry path, and helper functions. No real API key or Groq calls required — everything is mocked.
@@ -227,6 +248,8 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
+---
+
 ## 📖 How to Use
 
 1. Upload your resume as a PDF or paste the text directly
@@ -236,15 +259,25 @@ pytest tests/ -v
 5. Generate a **Cover Letter** or **Interview Prep** questions in one click
 6. Export the full analysis as a PDF
 
-## ☁️ Deployment (Free on Streamlit Community Cloud)
+---
 
+## ☁️ Deployment
+
+ResumeIQ ships two ways to run in production, depending on whether you want the REST API or the hosted UI:
+
+**Option A — Docker, anywhere that runs containers** *(recommended if you want the Flask API directly)*
+Deploy the `Dockerfile` to Render, Railway, Fly.io, or any container host. This is the core app — same one covered in [Docker](#-docker) above.
+
+**Option B — Streamlit Community Cloud** *(what the live demo above runs on)*
 1. Push this repo to GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io) → New app
 3. Connect your GitHub repo, branch `main`, and set the main file path to `streamlit_app.py`
 4. Add `GROQ_API_KEY` under App settings → Secrets
-5. Deploy!
+5. Deploy
 
-> The Flask version (`app.py`) also ships with a `Dockerfile` and can be deployed anywhere that runs containers (Render, Railway, Fly.io) if you'd rather use the REST API directly instead of the Streamlit UI.
+`streamlit_app.py` is a thin wrapper around the same core logic in `app.py` — it exists purely so the demo can run free on Streamlit Cloud without a separate server to keep alive.
+
+---
 
 ## 🩺 Health Check
 
@@ -260,6 +293,8 @@ pytest tests/ -v
 ```
 
 Useful for uptime monitors, or for confirming a deploy is fully wired up without digging through logs.
+
+---
 
 ## 🗺 Roadmap
 
@@ -282,6 +317,8 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - [ ] Multi-resume comparison mode
 - [ ] Resume rewrite suggestions (AI-powered)
 
+---
+
 ## 🧠 What I Learned
 
 - Building and structuring REST APIs with Flask
@@ -297,6 +334,8 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - Containerising a Python web app with Docker
 - Deploying to Streamlit Community Cloud and containerized alternatives (Render, Docker) with environment variable / secrets management and a `/health` endpoint for verifying production config
 
+---
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
@@ -306,6 +345,8 @@ Contributions, issues, and feature requests are welcome!
 3. Commit your changes: `git commit -m 'Add some feature'`
 4. Push to the branch: `git push origin feature/your-feature`
 5. Open a Pull Request
+
+---
 
 ## 📄 License
 
