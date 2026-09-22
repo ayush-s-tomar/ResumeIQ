@@ -55,6 +55,7 @@ https://github.com/user-attachments/assets/67348997-c992-4d03-a2ed-e9c6f25cdbeb
 - [How to Use](#-how-to-use)
 - [Deployment](#️-deployment)
 - [Health Check](#-health-check)
+- [Known Limitations](#-known-limitations)
 - [Roadmap](#-roadmap)
 - [What I Learned](#-what-i-learned)
 - [Contributing](#-contributing)
@@ -296,6 +297,14 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 
 ---
 
+## ⚠️ Known Limitations
+
+- **Small eval set** — 15 hand-labeled pairs is enough for a directional regression signal ("did this change make scoring worse?") but not a statistically robust benchmark; expanding the set is the natural next step before treating the 5.0 MAE as a precise, generalizable number.
+- **Score history is client-side only** — the last 5 analyses persist in the browser, not the server, since there's no auth system yet (see [Roadmap](#-roadmap)); history doesn't follow you across devices or browsers.
+- **Free-tier cold start** — the Streamlit Community Cloud demo sleeps after inactivity, so the first request after idle can take a few seconds (see [Live Demo](#-live-demo)).
+
+---
+
 ## 🗺 Roadmap
 
 - [x] ATS match score with keyword analysis
@@ -316,6 +325,7 @@ Useful for uptime monitors, or for confirming a deploy is fully wired up without
 - [ ] DOCX resume upload support
 - [ ] Multi-resume comparison mode
 - [ ] Resume rewrite suggestions (AI-powered)
+- [ ] Expand the eval set beyond 15 pairs for a more statistically robust benchmark
 
 ---
 
@@ -355,5 +365,6 @@ This project is licensed under the [MIT License](LICENSE).
 ## 👤 Author
 
 Built by [Ayush Singh Tomar](https://github.com/ayush-s-tomar)
+[LinkedIn](https://www.linkedin.com/in/ayushsinghtomar) · [Portfolio](https://ayush-s-tomar.vercel.app)
 
 If this project helped you or you found it interesting, consider giving it a ⭐ on GitHub — it genuinely helps!
